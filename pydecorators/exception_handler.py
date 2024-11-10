@@ -30,7 +30,7 @@ def validate_typehints(func: Callable):
         for arg, anottation in func.__annotations__.items():
             if arg in all_arguments:
                 if not isinstance(all_arguments[arg], anottation):
-                    raise ValueError(f'''Expected {anottation} on {arg}, got {
-                                     all_arguments[arg].__class__} instead''')
+                    raise ValueError(f'''Expected <{anottation.__name__}> on argument "{arg}", got <{
+                                     all_arguments[arg].__class__.__name__}> instead''')
         return func(*args, **kwargs)
     return wrapper

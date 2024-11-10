@@ -1,5 +1,5 @@
 """
-file.py
+Module containing general purpose decorators.
 """
 
 from functools import wraps

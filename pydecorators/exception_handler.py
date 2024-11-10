@@ -1,5 +1,5 @@
 """ Python module for exception handling and validation """
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 from .base import decorator
 from functools import wraps
 import logging
@@ -7,7 +7,22 @@ import inspect
 
 
 @decorator
-def exception_handling_default_value(func: Callable, default_value=None, *, logger: Optional[logging.Logger] = None):
+def exception_handling_default_value(func: Callable, default_value: Any = None, *, logger: Optional[logging.Logger] = None):
+    """
+    Decorator for assigning default value if function fails
+
+    Parameters
+    ----------       
+    default_value : Any
+        Default value which is set if the funciton fails  
+    logger : logging.Logger
+        Logger for logging warning if the function failed and the default value was returned
+
+    Returns
+    -------
+    function
+        Wrapped function that returns defealut value if exception is raised
+    """
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:

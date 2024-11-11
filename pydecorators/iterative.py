@@ -64,6 +64,7 @@ def average(func: Callable, n:int=5):
     ----------       
     n: int
         Number of times the function should be executed
+    
     Returns
     -------
     float

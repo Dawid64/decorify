@@ -76,6 +76,18 @@ def grid_search(func: Callable[[Any], Any], argument_parameters: Dict[str, list]
 
 @decorator
 def time_restriction(func: Callable[[Any], Any], time: float) -> Callable[[Any], Any]:
+    """
+    A decorator that restricts the execution time of a function. If the function does not complete
+    within the specified time limit, it is terminated and a TimeoutError is raised.
+
+    Args:
+        func (Callable[[Any], Any]): The function to be decorated.
+        time (float): The maximum allowed time for the function to execute, in seconds.
+
+    Returns:
+        Callable[[Any], Any]: The wrapped function with time restriction applied.
+    """
+
     @wraps(func)
     def inner_func(*args, **kwargs):
         # system dependent

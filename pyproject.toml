@@ -1,8 +1,9 @@
 [tool.poetry]
-name = "pydecorators"
-version = "0.1"
+name = "decorify"
+version = "0.1.0"
 description = "Simple light-weight Python library with handy for every day use decorators"
 readme = "README.md"
+repository = "https://github.com/Dawid64/Decorators"
 authors = ["Dawid Siera <dawid.siera@gmail.com>", "Julian Mikołajczak", "Michał Redmer", "Adam Tomys"]
 
 [tool.poetry.dev-dependencies]

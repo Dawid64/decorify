@@ -1,5 +1,5 @@
 import logging
-from pydecorators import default_value, validate_typehints
+from decorify import default_value, validate_typehints
 from pytest import raises
 
 

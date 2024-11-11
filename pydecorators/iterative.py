@@ -24,8 +24,10 @@ def retry(func: Callable, max_retries:int=5):
         while tries < max_retries:
             try:
                 return func(*args, **kwargs)
-            except:
+            except Exception as e:
                 tries += 1  
+                if tries == max_retries:
+                    raise e 
         return None
     return wrapper
 
@@ -56,7 +58,7 @@ def loop(func: Callable, n:int=5):
 @decorator
 def average(func: Callable, n:int=5):
     """
-    Decorator for calculating average value of function ran n times (function should return int or float values)
+    Decorator for calculating average value of function ran n times (function output should be addable and divisble by 0)
     Parameters
     ----------       
     n: int
@@ -68,14 +70,11 @@ def average(func: Callable, n:int=5):
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
-
         values = []
         for _ in range(n):
             values.append(func(*args,**kwargs))
-        try:
-            return sum(values) / n 
-        except Exception as e:
-            raise ValueError("One or more of the returns of the functino is invalid")
+        return sum(values) / n 
     return wrapper
+
 
 

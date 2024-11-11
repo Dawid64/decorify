@@ -1,3 +1,4 @@
+from pytest import raises
 from pydecorators.iterative import loop,retry,average
 
 
@@ -25,7 +26,17 @@ def test_retry_3():
 
     assert t() == None and tries == 3
 
-# TODO test if numpyworks, check if ValueError shows properly
+
+def test_retry_failed():
+    @retry(5)
+    def division_by_zero():
+        print(1/0)
+    
+    with raises(ZeroDivisionError):
+        division_by_zero()
+
+
+
 
 def test_avrage_n():
     @average(50)
@@ -33,4 +44,7 @@ def test_avrage_n():
         return a+b
     print(add(2,2))
     assert add(2,2) == 4
+
+
+
 

@@ -5,7 +5,7 @@ Module containing general purpose decorators.
 from functools import wraps
 import multiprocessing
 from typing import Any, Callable, Dict
-from time import perf_counter, sleep
+from time import perf_counter
 from itertools import product
 from .base import decorator
 
@@ -88,7 +88,7 @@ def time_restriction(func: Callable[[Any], Any], time: float) -> Callable[[Any],
 
         func_thread = multiprocessing.Process(target=worker, args=(func, args, kwargs, queue))
         func_thread.start()
-        sleep(time)
+        func_thread.join(time)
         if func_thread.is_alive():
             func_thread.terminate()
             raise TimeoutError(f"Function {func.__name__} has not finished within the time constraint.")

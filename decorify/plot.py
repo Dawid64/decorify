@@ -40,6 +40,7 @@ def plot_multiple(plot_type: Literal["boxplot", "violin"] = "boxplot", __func__:
     return inner_func
 
 
+@decorator
 def plot_single(plot_type: Literal["boxplot", "violin"] = "boxplot", __func__: Callable[[Any], Any] = None):
     """
     Decorator for creating a plot of a function's return values.

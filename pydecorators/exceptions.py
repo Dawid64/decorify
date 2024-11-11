@@ -7,7 +7,7 @@ import inspect
 
 
 @decorator
-def exception_handling_default_value(func: Callable, default_value: Any = None, *, logger: Optional[logging.Logger] = None):
+def default_value(func: Callable, default_value: Any = None, *, logger: Optional[logging.Logger] = None):
     """
     Decorator for assigning default value if function fails
 

@@ -1,4 +1,5 @@
-from pydecorators.basic import timeit, grid_search
+import pytest
+from pydecorators.basic import timeit, grid_search, time_restriction
 from time import sleep
 
 
@@ -58,3 +59,24 @@ def test_grid_search_without_arguments():
 
     value = add(c=2)
     assert value == 10
+
+
+def test_time_restriction_not_stopped():
+    @time_restriction(3)
+    def foo():
+        sleep(1)
+        return 1
+
+    function_result = foo()
+    assert function_result == 1
+
+
+def test_time_restriction_stopped():
+    @time_restriction(1)
+    def foo():
+        sleep(2)
+        return 1
+
+    with pytest.raises(TimeoutError) as e:
+        foo()
+        assert str(e.value) == f"Function {foo.__name__} has not finished within the time constraint."

@@ -21,20 +21,13 @@ pip install decorify
 - **loop**: Runs the function n times and returns list of values
 - **average**: Automaticly calulates avrerage from n runs of a function
 
-
-
-
 ### Exceptions
 - **default_value**: Assigns a default value to the function
 - **validate_typehints**: Checks if all the typehits passed to the function are of correct type
 
-
-
 ### Plotting (matplotlib)
 - **plot_multiple**: Creates a plot of a function's return values
 - **plot_single**: Creates a plot of a function's return 
-    
-
 
 # Contributing
 Contributions are welcome! Please submit a pull request or open an issue to add new decorators or suggest improvements.

@@ -1,6 +1,9 @@
 # Decorify 
-Python Library for decorators
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/decorify)](https://pypi.org/project/decorify/)
+[![PyPI Latest Release](https://img.shields.io/pypi/v/decorify.svg)](https://pypi.org/project/decorify/)
+![CI - Test](https://github.com/Dawid64/decorify/actions/workflows/python-app.yml/badge.svg)
 
+Python Library for decorators
 
 Decorify  is a lightweight Python library without any dependencies that offers a collection of simple, reusable decorators to enhance your functions. These decorators cover common use cases like logging, timing, retrying, and more. 
 

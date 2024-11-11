@@ -1,11 +1,13 @@
+""" Module containing plotting functions """
+
 from typing import Iterable, Any, Tuple, Dict, Literal
 from functools import wraps
 import matplotlib.pyplot as plt
-from .base import decorator
+from pydecorators.base import decorator
 
 
 @decorator
-def plot_decorator_single_output_function(func, plot_type: Literal["boxplot", "violin"] = "boxplot"):
+def plot_multiple(func, plot_type: Literal["boxplot", "violin"] = "boxplot"):
     """
     Decorator for creating plots of a function's return values.
 
@@ -38,7 +40,7 @@ def plot_decorator_single_output_function(func, plot_type: Literal["boxplot", "v
     return inner_func
 
 
-def plot_decorator_multiple_output_function(func, plot_type: Literal["boxplot", "violin"] = "boxplot"):
+def plot_single(func, plot_type: Literal["boxplot", "violin"] = "boxplot"):
     """
     Decorator for creating plots of a function's return values.
 

@@ -1,4 +1,4 @@
 """ TODO """
 from pydecorators.base import decorator
 from pydecorators.basic import timeit, grid_search, time_restriction
-from pydecorators.statistics import plot_decorator_single_output_function, plot_decorator_multiple_output_function
+from pydecorators.statistics import plot_multiple, plot_single

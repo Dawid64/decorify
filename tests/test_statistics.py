@@ -1,11 +1,8 @@
-from pydecorators import (
-    plot_decorator_single_output_function,
-    plot_decorator_multiple_output_function,
-)
+from pydecorators import plot_multiple, plot_single
 
 
-def test_plot_decorator_single(monkeypatch):
-    @plot_decorator_single_output_function
+def test_plot_multiple(monkeypatch):
+    @plot_multiple
     def add(a: int, b: int):
         return a + b
 
@@ -21,8 +18,8 @@ def test_plot_decorator_single(monkeypatch):
     assert if_shown_graph
 
 
-def test_plot_decoratoror_multiple(monkeypatch):
-    @plot_decorator_multiple_output_function
+def test_plot_single(monkeypatch):
+    @plot_single
     def add(arguments):
         return [sum(x) for x in arguments]
 

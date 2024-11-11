@@ -1,14 +1,14 @@
-# Decorators
+# Decorify 
 Python Library for decorators
 
 
-Decorators is a lightweight Python library without any dependencies that offers a collection of simple, reusable decorators to enhance your functions. These decorators cover common use cases like logging, timing, retrying, and more. 
+Decorify  is a lightweight Python library without any dependencies that offers a collection of simple, reusable decorators to enhance your functions. These decorators cover common use cases like logging, timing, retrying, and more. 
 
 ## Installation
-Install Decorators via pip**:
+Install Decorators via pip:
 
 ```bash
-pip install Decorators
+pip install decorify 
 ```
 ## Features
 

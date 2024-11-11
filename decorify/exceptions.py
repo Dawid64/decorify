@@ -29,8 +29,8 @@ def default_value(default_value: Any = None, *, logger: Optional[logging.Logger]
             return __func__(*args, **kwargs)
         except Exception as e:
             if isinstance(logger, logging.Logger):
-                logger.warning(f"Set default value in function '{
-                               __func__.__name__}', because of '{e}'")
+                logger.warning(f"""Set default value in function '{
+                               __func__.__name__}', because of '{e}'""")
             return default_value
 
     return wrapper

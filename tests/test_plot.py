@@ -1,4 +1,4 @@
-from decorify import plot_multiple, plot_single
+from decorify.plot import plot_multiple, plot_single
 
 
 def test_plot_multiple(monkeypatch):

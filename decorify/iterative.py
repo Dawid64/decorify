@@ -42,6 +42,7 @@ def loop(n: int = 5, *, __func__: Callable = None):
     ----------       
     n: int
         Number of times the function should be executed
+
     Returns
     -------
     list

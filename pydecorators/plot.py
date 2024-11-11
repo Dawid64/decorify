@@ -9,7 +9,7 @@ from pydecorators.base import decorator
 @decorator
 def plot_multiple(func, plot_type: Literal["boxplot", "violin"] = "boxplot"):
     """
-    Decorator for creating plots of a function's return values.
+    Decorator for creating a plot of a function's return values.
 
     Parameters
     ----------
@@ -42,7 +42,7 @@ def plot_multiple(func, plot_type: Literal["boxplot", "violin"] = "boxplot"):
 
 def plot_single(func, plot_type: Literal["boxplot", "violin"] = "boxplot"):
     """
-    Decorator for creating plots of a function's return values.
+    Decorator for creating a plot of a function's return values.
 
     Parameters
     ----------

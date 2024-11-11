@@ -1,5 +1,5 @@
+from functools import wraps
 from typing import Callable
-
 
 def decorator(dec: Callable):
     def inner_func(*args, **kwargs):
@@ -10,3 +10,18 @@ def decorator(dec: Callable):
             return dec(func, *args, **kwargs)
         return wrapped_func
     return inner_func
+
+
+@decorator
+def modulo(func,/,mod,mod2):
+    @wraps(func)
+    def wrapper(*args,**kwargs):
+        return func(*args,**kwargs) % mod % mod2
+    return wrapper
+
+
+@modulo(10,6)
+def pow(a,b):
+    return a**b
+
+

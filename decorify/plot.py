@@ -1,13 +1,13 @@
 """ Module containing plotting functions """
 
-from typing import Iterable, Any, Tuple, Dict, Literal
+from typing import Callable, Iterable, Any, Tuple, Dict, Literal
 from functools import wraps
 import matplotlib.pyplot as plt
-from pydecorators.base import decorator
+from decorify.base import decorator
 
 
 @decorator
-def plot_multiple(func, plot_type: Literal["boxplot", "violin"] = "boxplot"):
+def plot_multiple(plot_type: Literal["boxplot", "violin"] = "boxplot", __func__: Callable[[Any], Any] = None):
     """
     Decorator for creating a plot of a function's return values.
 
@@ -23,11 +23,11 @@ def plot_multiple(func, plot_type: Literal["boxplot", "violin"] = "boxplot"):
         And takes a list of tuples as input, where each tuple contains the arguments and keyword arguments for the original function.
     """
 
-    @wraps(func)
+    @wraps(__func__)
     def inner_func(arguments: Iterable[Tuple[Iterable[Any], Dict[str, Any]]]):
         results = []
         for args, kwargs in arguments:
-            results.append(func(*args, **kwargs))
+            results.append(__func__(*args, **kwargs))
         if plot_type == "violin":
             plt.violinplot(results)
         elif plot_type == "boxplot":
@@ -40,7 +40,7 @@ def plot_multiple(func, plot_type: Literal["boxplot", "violin"] = "boxplot"):
     return inner_func
 
 
-def plot_single(func, plot_type: Literal["boxplot", "violin"] = "boxplot"):
+def plot_single(plot_type: Literal["boxplot", "violin"] = "boxplot", __func__: Callable[[Any], Any] = None):
     """
     Decorator for creating a plot of a function's return values.
 
@@ -55,9 +55,9 @@ def plot_single(func, plot_type: Literal["boxplot", "violin"] = "boxplot"):
         Wrapped function that shows a plot of the original function's return values.
     """
 
-    @wraps(func)
+    @wraps(__func__)
     def inner_func(*args, **kwargs):
-        results = func(*args, **kwargs)
+        results = __func__(*args, **kwargs)
         if plot_type == "violin":
             plt.violinplot(results)
         elif plot_type == "boxplot":

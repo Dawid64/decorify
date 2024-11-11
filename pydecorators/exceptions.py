@@ -28,7 +28,6 @@ def default_value(func: Callable, default_value: Any = None, *, logger: Optional
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            # TODO
             if isinstance(logger, logging.Logger):
                 logger.warning(f"Set default value in function '{
                                func.__name__}', because of '{e}'")

@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "pydecorators"
+version = "0.1"
+description = "Simple light-weight Python library with handy for every day use decorators"
+readme = "README.md"
+authors = ["Dawid Siera <dawid.siera@gmail.com>", "Julian Mikołajczak", "Michał Redmer", "Adam Tomys"]
+
+[tool.poetry.dependencies]
+pytest = "^6.2.4"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.4"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

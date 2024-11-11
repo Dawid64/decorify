@@ -24,7 +24,8 @@ def test_retry_3():
             raise Exception
         return 'hello'
 
-    assert t() == 'hello' and tries == 3
+    assert t() == 'hello' 
+    assert tries == 3
 
 
 def test_retry_failed():

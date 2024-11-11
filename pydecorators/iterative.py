@@ -12,6 +12,7 @@ def retry(func: Callable, max_retries:int=5):
     ----------       
     max_retries: int
         Maximal number of retries 
+    
     Returns
     -------
     function
@@ -31,7 +32,6 @@ def retry(func: Callable, max_retries:int=5):
         return None
     return wrapper
 
-import random
 
 @decorator
 def loop(func: Callable, n:int=5):
@@ -58,7 +58,8 @@ def loop(func: Callable, n:int=5):
 @decorator
 def average(func: Callable, n:int=5):
     """
-    Decorator for calculating average value of function ran n times (function output should be addable and divisble by 0)
+    Decorator for calculating average value of function ran n times (function output should be addable and divisble by an integer)
+    
     Parameters
     ----------       
     n: int

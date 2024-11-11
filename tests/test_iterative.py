@@ -22,9 +22,9 @@ def test_retry_3():
         tries+=1
         if tries != 3:
             raise Exception
-        return None
+        return 'hello'
 
-    assert t() == None and tries == 3
+    assert t() == 'hello' and tries == 3
 
 
 def test_retry_failed():

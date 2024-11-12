@@ -1,13 +1,13 @@
-from pydecorators import decorator
+from decorify import decorator
 from functools import wraps
 
 
 def test_base_structure():
     @decorator
-    def test_decorator(func: int, value=2):
-        @wraps(func)
+    def test_decorator(value=2, __func__=None):
+        @wraps(__func__)
         def wrapped(*args, **kwargs):
-            return func(*args, **kwargs) * value
+            return __func__(*args, **kwargs) * value
         return wrapped
 
     @test_decorator

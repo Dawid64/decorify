@@ -1,2 +1,4 @@
+pytest
+matplotlib
 sphinx
 sphinx_rtd_theme

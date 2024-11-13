@@ -1,21 +1,16 @@
 Decorify
 =============
-
-.. py:module:: decorify
-
-# Decorify
-Python Library for decorators
-
-
-Decorify  is a lightweight Python library without any dependencies that offers a collection of simple, reusable decorators to enhance your functions. These decorators cover common use cases like logging, timing, retrying, and more.
-
+.. automodule:: decorify
+   :noindex:
+   :members:
+   :exclude-members: default_value, grid_search, time_restriction, timeit, validate_typehints
 
 Functions
 ---------
 
 .. autosummary::
-
-   decorator
+   :nosignatures:
+   
    timeit
    grid_search
    time_restriction
@@ -33,9 +28,7 @@ Submodules
 Package Contents
 ----------------
 
-.. py:function:: decorator(dec: Callable)
-
-.. py:function:: timeit(accuracy: int = 2, __func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]
+.. py:function:: timeit(accuracy: int = 2)
 
    Decorator for measuring execution time of a function.
 
@@ -47,7 +40,7 @@ Package Contents
    :rtype: function
 
 
-.. py:function:: grid_search(argument_parameters: Dict[str, list], return_all_values: bool = False, key=max, return_without_arguments: bool = False, __func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]
+.. py:function:: grid_search(argument_parameters: Dict[str, list], return_all_values: bool = False, key=max, return_without_arguments: bool = False)
 
    Perfomes the grid search on passed arguments.
    The function can either return found arguments and it's value,
@@ -67,7 +60,7 @@ Package Contents
    :rtype: function
 
 
-.. py:function:: time_restriction(time: float, __func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]
+.. py:function:: time_restriction(time: float)
 
    A decorator that restricts the execution time of a function. If the function does not complete
    within the specified time limit, it is terminated and a TimeoutError is raised.
@@ -81,7 +74,7 @@ Package Contents
    :rtype: Callable[[Any], Any]
 
 
-.. py:function:: default_value(default_value: Any = None, *, logger: Optional[logging.Logger] = None, __func__: Callable = None)
+.. py:function:: default_value(default_value: Any = None, *, logger: Optional[logging.Logger] = None)
 
    Decorator for assigning default value if function fails
 
@@ -94,7 +87,7 @@ Package Contents
    :rtype: function
 
 
-.. py:function:: validate_typehints(__func__: Callable = None)
+.. py:function:: validate_typehints()
 
    Checks if arguments passed to wrapped functions, are instances of typehint classes
    If not raises Value error.
@@ -104,6 +97,3 @@ Package Contents
 
    :raises Value Error:: Raises value error if passed arguments does not match the typehints.
 
-
-
-.. [#f1] Created with `sphinx-autoapi <https://github.com/readthedocs/sphinx-autoapi>`_

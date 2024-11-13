@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path('..', '..').resolve()))
+sys.path.insert(0, str(Path('../decorify').resolve()))
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -20,19 +20,21 @@ release = '0.1.1'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
+    "sphinx.ext.doctest",
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
 ]
 
-autoapi_dirs = ['../../decorify']
+autosummary_generate = True
 templates_path = ['_templates']
 exclude_patterns = []
-autoapi_keep_files = True
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True,
+    'show-inheritance': True,
+}
 
-# -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
-html_theme = 'pydata_sphinx_theme'
+html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']

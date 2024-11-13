@@ -32,14 +32,14 @@ jobs:
         run: |
           pip install sphinx sphinx_rtd_theme
       - name: Make sphinx
-        working-directory: ./doc
+        working-directory: ./docs
         run: make html
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './doc/build/html'
+          path: './docs/build/html'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

@@ -2,6 +2,7 @@
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/decorify)](https://pypi.org/project/decorify/)
 [![PyPI Latest Release](https://img.shields.io/pypi/v/decorify.svg)](https://pypi.org/project/decorify/)
 ![CI - Test](https://github.com/Dawid64/decorify/actions/workflows/python-app.yml/badge.svg)
+[![GitHub Pages Documentation](https://img.shields.io/badge/GitHub_Pages-Documentation-blue)](https://dawid64.github.io/decorify/)
 
 Python Library for decorators
 

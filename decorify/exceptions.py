@@ -9,7 +9,7 @@ import inspect
 @decorator
 def default_value(default_value: Any = None, *, logger: Optional[logging.Logger] = None, __func__: Callable = None):
     """
-    Decorator for assigning default value if function fails
+    Decorator for assigning default value if function fails.
 
     Parameters
     ----------       

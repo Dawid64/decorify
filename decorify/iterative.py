@@ -1,3 +1,4 @@
+""" Module with some iterative decorators. """
 from functools import wraps
 from typing import Callable
 from .base import decorator

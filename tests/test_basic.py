@@ -1,4 +1,3 @@
-import pytest
 from pytest import raises
 from decorify.basic import timeit, grid_search, time_restriction, timeout
 from time import sleep
@@ -63,9 +62,9 @@ def test_grid_search_without_arguments():
 
 
 def test_time_restriction_not_stopped():
-    @time_restriction(3)
+    @time_restriction(0.3)
     def foo():
-        sleep(1)
+        sleep(0.1)
         return 1
 
     function_result = foo()
@@ -73,12 +72,12 @@ def test_time_restriction_not_stopped():
 
 
 def test_time_restriction_stopped():
-    @time_restriction(1)
+    @time_restriction(0.1)
     def foo():
-        sleep(2)
+        sleep(0.2)
         return 1
 
-    with pytest.raises(TimeoutError) as e:
+    with raises(TimeoutError) as e:
         foo()
         assert str(e.value) == f"Function {
             foo.__name__} has not finished within the time constraint."
@@ -121,3 +120,12 @@ def test_timeout_while():
         return value
 
     assert foo() is None
+
+
+def test_timeout_error():
+    @timeout(0.1, None)
+    def foo():
+        raise ValueError()
+
+    with raises(ValueError):
+        foo()

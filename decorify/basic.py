@@ -8,6 +8,8 @@ from typing import Any, Callable, Dict
 from time import perf_counter
 from itertools import product
 from .base import decorator
+from multiprocessing.pool import ThreadPool
+from multiprocessing.context import TimeoutError as mp_TimeoutError
 
 
 @decorator
@@ -109,3 +111,19 @@ def time_restriction(time: float, __func__: Callable[[Any], Any] = None) -> Call
                 f"Function {__func__.__name__} has not finished within the time constraint.")
         return queue.get()
     return inner_func
+
+
+@decorator
+def timeout(time: float, default_value: Any = None, default_none: bool = False, __func__=None) -> Callable[[Any], Any]:
+    @wraps(__func__)
+    def wrapped(*args, **kwargs):
+        with ThreadPool(1) as pool:
+            res = pool.apply_async(__func__, args, kwargs)
+            try:
+                result = res.get(timeout=time)
+            except mp_TimeoutError:
+                if default_none or default_value is not None:
+                    return default_value
+                raise TimeoutError()
+        return result
+    return wrapped

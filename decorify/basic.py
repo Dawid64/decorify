@@ -7,7 +7,7 @@ import multiprocessing
 from typing import Any, Callable, Dict
 from time import perf_counter
 from itertools import product
-from .base import decorator
+from decorify.base import decorator
 
 
 @decorator

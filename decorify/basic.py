@@ -114,7 +114,22 @@ def time_restriction(time: float, __func__: Callable[[Any], Any] = None) -> Call
 
 
 @decorator
-def timeout(time: float, default_value: Any = None, default_none: bool = False, __func__=None) -> Callable[[Any], Any]:
+def timeout(time: float, default_value: Any = mp_TimeoutError, __func__=None) -> Callable[[Any], Any]:
+    """ Decorated function is run in new process while still sharing memory, if the time limit is reached
+    function returns default value or raises TimeoutError if default_value is not set.
+
+    **!!Note function uses multiprocessing library which does not provide support for IOS, Android and WASI!!**
+
+    ## Args:
+        time (float): timeout limit in seconds.
+        default_value (Any, optional): value to be outputted if timeout is reached. Defaults to mp_TimeoutError.
+
+    ## Raises:
+        TimeoutError: if time limit is reached
+
+    ## Wrapped Function Returns:
+        Functions output if function reached in time limit or default value if such value was set, and time limit was reached
+    """
     @wraps(__func__)
     def wrapped(*args, **kwargs):
         with ThreadPool(1) as pool:
@@ -122,7 +137,7 @@ def timeout(time: float, default_value: Any = None, default_none: bool = False, 
             try:
                 result = res.get(timeout=time)
             except mp_TimeoutError:
-                if default_none or default_value is not None:
+                if default_value is not mp_TimeoutError:
                     return default_value
                 raise TimeoutError()
         return result

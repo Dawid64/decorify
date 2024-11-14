@@ -14,6 +14,19 @@ Install Decorators via pip:
 ```bash
 pip install decorify 
 ```
+
+## Table of content
+
+| function | description |
+| --- | --- |
+| **timeit** | Measures the execution time of a function |
+| **validate_typehints** | Raises exception if argument doesn't match the typehint |
+| **timeout** | Function either raises error or returns default value if time limit is reached |
+| **retry** | Retries a function again up to *n* times if fails
+| **default_value** | Sets default value for function if error occurs
+| **and more ...** | More functions and more precise description can be found in libraries documentation
+
+
 ## Features
 
 ### Basic

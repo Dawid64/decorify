@@ -79,8 +79,7 @@ def test_time_restriction_stopped():
 
     with raises(TimeoutError) as e:
         foo()
-        assert str(e.value) == f"Function {
-            foo.__name__} has not finished within the time constraint."
+        assert str(e.value) == f"Function {foo.__name__} has not finished within the time constraint."
 
 
 def test_timeout():

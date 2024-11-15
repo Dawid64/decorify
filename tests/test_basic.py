@@ -61,27 +61,6 @@ def test_grid_search_without_arguments():
     assert value == 10
 
 
-def test_time_restriction_not_stopped():
-    @time_restriction(0.3)
-    def foo():
-        sleep(0.1)
-        return 1
-
-    function_result = foo()
-    assert function_result == 1
-
-
-def test_time_restriction_stopped():
-    @time_restriction(0.1)
-    def foo():
-        sleep(0.2)
-        return 1
-
-    with raises(TimeoutError) as e:
-        foo()
-        assert str(e.value) == f"Function {foo.__name__} has not finished within the time constraint."
-
-
 def test_timeout():
     @timeout(0.1)
     def foo(val):

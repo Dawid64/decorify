@@ -78,42 +78,6 @@ def grid_search(argument_parameters: Dict[str, list],
 
 
 @decorator
-def time_restriction(time: float, __func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
-    """
-    A decorator that restricts the execution time of a function. If the function does not complete
-    within the specified time limit, it is terminated and a TimeoutError is raised.
-
-    Args:
-        func (Callable[[Any], Any]): The function to be decorated.
-        time (float): The maximum allowed time for the function to execute, in seconds.
-
-    Returns:
-        Callable[[Any], Any]: The wrapped function with time restriction applied.
-    """
-
-    @wraps(__func__)
-    def inner_func(*args, **kwargs):
-        # system dependent
-        multiprocessing.set_start_method('fork', force=True)
-        queue = multiprocessing.Queue()
-
-        def worker(func, args, kwargs, queue):
-            result = func(*args, **kwargs)
-            queue.put(result)
-
-        func_thread = multiprocessing.Process(
-            target=worker, args=(__func__, args, kwargs, queue))
-        func_thread.start()
-        func_thread.join(time)
-        if func_thread.is_alive():
-            func_thread.terminate()
-            raise TimeoutError(
-                f"Function {__func__.__name__} has not finished within the time constraint.")
-        return queue.get()
-    return inner_func
-
-
-@decorator
 def timeout(time: float, default_value: Any = mp_TimeoutError, __func__=None) -> Callable[[Any], Any]:
     """ Decorated function is run in new process while still sharing memory, if the time limit is reached
     function returns default value or raises TimeoutError if default_value is not set.

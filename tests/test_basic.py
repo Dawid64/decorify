@@ -1,5 +1,5 @@
 from pytest import raises
-from decorify.basic import timeit, grid_search, time_restriction, timeout
+from decorify.basic import timeit, grid_search, timeout
 from time import sleep
 
 

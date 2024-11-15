@@ -3,7 +3,7 @@ Decorify
 .. automodule:: decorify
    :noindex:
    :members:
-   :exclude-members: default_value, grid_search, time_restriction, timeit, validate_typehints
+   :exclude-members: default_value, grid_search, timeout, timeit, validate_typehints
 
 Functions
 ---------
@@ -13,7 +13,7 @@ Functions
    
    timeit
    grid_search
-   time_restriction
+   timeout
    default_value
    validate_typehints
 
@@ -60,18 +60,20 @@ Package Contents
    :rtype: function
 
 
-.. py:function:: time_restriction(time: float)
+.. py:function:: timeout(time: float, default_value: Any = mp_TimeoutError)
 
-   A decorator that restricts the execution time of a function. If the function does not complete
-   within the specified time limit, it is terminated and a TimeoutError is raised.
+   Decorated function is run in new process while still sharing memory, if the time limit is reached
+   function returns default value or raises TimeoutError if default_value is not set.
 
-   :param func: The function to be decorated.
-   :type func: Callable[[Any], Any]
    :param time: The maximum allowed time for the function to execute, in seconds.
    :type time: float
+   :param default_value: Default output value if timeout is reached. If value not changed, decorator raises TimeoutError.
+   :type time: Any
 
-   :returns: The wrapped function with time restriction applied.
-   :rtype: Callable[[Any], Any]
+   :raises TimeoutError:: Raises TimeoutError if default_value argument is TimeoutError and specified time is reached.
+
+   :returns: Functions output if function reached in time limit or default value if such value was set, and time limit was reached.
+   :rtype: function
 
 
 .. py:function:: default_value(default_value: Any = None, *, logger: Optional[logging.Logger] = None)

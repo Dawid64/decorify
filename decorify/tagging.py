@@ -21,3 +21,10 @@ class Tag(metaclass=_DecoratorMetaClass):
 
     def apply(self, *args, **kwargs):
         return [func(*args, **kwargs) for func in self._tags[self.name]]
+
+    def call_all(self, *args, **kwargs):
+        # TODO: Add multiprocessing support
+        return [func(*args, **kwargs) for func in self._tags[self.name]]
+
+    def tolist(self):
+        return self._tags[self.name]

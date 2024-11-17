@@ -28,3 +28,7 @@ class Tag(metaclass=_DecoratorMetaClass):
 
     def tolist(self):
         return self._tags[self.name]
+
+    @staticmethod
+    def clear():
+        Tag._tags.clear()

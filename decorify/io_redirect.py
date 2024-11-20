@@ -61,3 +61,31 @@ def redirect_stdout(file: TextIOBase|str|None = None,__func__: Callable[[Any], A
             dest.close()
         return result
     return inner_func
+
+
+@decorator
+def redirect_stderr(file: TextIOBase|str|None = None,__func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
+    """ Decorator that redirects everything written to stderr to a file or a file-like object.
+
+    Parameters
+    ----------
+    file : TextIOBase, str, None
+        File or file-like object to redirect stderr to. If a string is passed the stderr is redirected
+        to a file with that name in append mode. If None, all text written to stderr is deleted instead.
+
+    Returns
+    -------
+    function
+        Wrapped function that has stderr redirected to the specified file.
+    """
+    @wraps(__func__)
+    def inner_func(*args, **kwargs):
+        dest = __redirect_dest(file)
+        temp_stderr = sys.stderr
+        sys.stderr = dest
+        result = __func__(*args, **kwargs)
+        sys.stderr = temp_stderr
+        if dest != file:
+            dest.close()
+        return result
+    return inner_func

@@ -1,6 +1,6 @@
 import os
 import sys
-from io import TextIOBase
+from io import IOBase
 from functools import wraps
 from typing import Any, Callable
 from .base import decorator
@@ -24,24 +24,24 @@ def no_print(__func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
     return inner_func
 
 
-def __redirect_dest(file: TextIOBase|str|None) -> TextIOBase:
+def __redirect_dest(file: IOBase|str|None) -> IOBase:
     """ Returns a file-like object to redirect stdout to."""
     if file is None:
         return open(os.devnull, 'w')
     elif isinstance(file, str):
         return open(file, 'a')
-    elif isinstance(file, TextIOBase):
+    elif isinstance(file, IOBase):
         return file
     raise ValueError("Invalid file type. Please pass a file-like object, a string or None.")
 
 
 @decorator
-def redirect_stdout(file: TextIOBase|str|None = None,__func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
+def redirect_stdout(file: IOBase|str|None = None,__func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
     """ Decorator that redirects everything written to stdout to a file or a file-like object.
 
     Parameters
     ----------
-    file : TextIOBase, str, None
+    file : IOBase, str, None
         File or file-like object to redirect stdout to. If a string is passed the stdout is redirected
         to a file with that name in append mode. If None, all text written to stdout is deleted instead.
 
@@ -64,12 +64,12 @@ def redirect_stdout(file: TextIOBase|str|None = None,__func__: Callable[[Any], A
 
 
 @decorator
-def redirect_stderr(file: TextIOBase|str|None = None,__func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
+def redirect_stderr(file: IOBase|str|None = None,__func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
     """ Decorator that redirects everything written to stderr to a file or a file-like object.
 
     Parameters
     ----------
-    file : TextIOBase, str, None
+    file : IOBase, str, None
         File or file-like object to redirect stderr to. If a string is passed the stderr is redirected
         to a file with that name in append mode. If None, all text written to stderr is deleted instead.
 

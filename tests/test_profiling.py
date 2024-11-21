@@ -1,5 +1,4 @@
-import sys
-from decorify.profiling import crawler, Tree, generate_ascit_tree
+from decorify.profiling import crawler, Tree, generate_ascii_tree
 
 
 def test_profiling_stack():
@@ -38,5 +37,5 @@ def test_profiling_tree():
 def test_ascii_generator():
     sample = ['add_1', ['add_2', ['add_2', ['add_2', ['add_2', ['add_2'], ['add_2']], ['add_2']], [
         'add_2', ['add_2'], ['add_2']]], ['add_2', ['add_2', ['add_2'], ['add_2']], ['add_2']]]]
-    ascii_tree = generate_ascit_tree(sample)
+    ascii_tree = generate_ascii_tree(sample)
     assert isinstance(ascii_tree, str)

@@ -16,7 +16,7 @@ def test_profiling_stack_build_ins():
     def func_a():
         return sum([1, 1])
 
-    @crawler(build_ins=True, as_list=True)
+    @crawler(c_calls=True, as_list=True)
     def func_b():
         return func_a() + func_a()
 

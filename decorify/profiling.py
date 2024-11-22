@@ -1,13 +1,15 @@
 """ Module for profiling operations """
 from functools import wraps
+import logging
 import traceback
 import sys
-from typing import List, Optional
+from typing import List, Literal, Optional
 from decorify.base import decorator
 
 
 def generate_ascii_tree(item, prefix='', is_last=False, is_root=True):
     """Recursively generates ASCII tree from nested list."""
+
     # TODO: can be changed into iterative approach
     text = ''
     if isinstance(item, list):
@@ -55,7 +57,7 @@ class Tree:
 
 
 @decorator
-def crawler(build_ins: bool = False, as_list: bool = False, as_tree: bool = True, __func__=None):
+def crawler(c_calls: bool = False, return_type: Literal['Tree', 'List', 'Logger', 'Print'] = 'Print', logger: logging.Logger = None, __func__=None):
     """
     ## Crawler
     Decorator for finding structure of the function.
@@ -65,28 +67,35 @@ def crawler(build_ins: bool = False, as_list: bool = False, as_tree: bool = True
     #### Crawler shoul not be used:
     - On a recursive function
     - When other profiler is enabled
-    - When Exception or Error is going to be raised TODO: this should be fixed
+    - When Exception or Error is going to be raised
 
     **!! Note: The crawler may significantly slow down the function, it's recommended for debugging learning purposes !!**
 
     Parameters
     ----------
-    build_ins : bool
-        If enabled crawler also finds build-in functions
-    as_list : bool
-        If enabled the function rather than it's oridinary output, returns nested python list containing the output of crawler.
-    as_tree : bool
-        If enabled the function rather than it's oridinary output, returns `decorify.profiling.Tree` structure containing the output of crawler.
+    c_calls : bool
+        If enabled crawler also looks for C calls, by default False
+    return_type : Literal['Tree', 'List', 'Logger', 'Print']
+        Type of the output, by default 'Print':
+        - 'Tree' - returns `decorify.profiling.Tree` structure
+        - 'List' - returns python nested list
+        - 'Logger' - messages logger with tree structure (remember to enable logging)
+        - 'Print' - prints tree structure
+    logger : logging.Logger
+        If return_type is 'Logger' to specify logger, if left None it uses root logger, by default None
 
     Returns
     -------
     Callable
-        If as_list or as_tree enabled, wrapped function returns either `decorify.profiling.Tree` structure or nested lists
-        `decorify.profiling.Tree` can be printed to show the result as an ascii art.
-        If non of those options are enabled, function returns it's default results
+        Wrapped function returning tree structure, nested list or default results depending on return_type parameter.
+        If return_type is "Tree" it returns `decorify.profiling.Tree` structure, if "List" it returns python nested list.
     """
+
+    # TODO: Add support for exceptions
     trace_tree: Tree = Tree('Base')
     head: Tree = trace_tree
+    if return_type == 'Logger' and logger is None:
+        logger = logging.getLogger()
 
     def profiler(call_stack, event, arg):
         nonlocal head
@@ -95,13 +104,13 @@ def crawler(build_ins: bool = False, as_list: bool = False, as_tree: bool = True
             new_tree = Tree(name, head)
             head.childrens.append(new_tree)
             head = new_tree
-        elif build_ins and event == 'c_call':
+        elif event == 'return':
+            head = head.parent
+        elif c_calls and event == 'c_call':
             new_tree = Tree(arg.__name__, head)
             head.childrens.append(new_tree)
             head = new_tree
-        elif event == 'return':
-            head = head.parent
-        elif build_ins and event == 'c_return':
+        elif c_calls and event == 'c_return':
             head = head.parent
 
     @wraps(__func__)
@@ -114,10 +123,40 @@ def crawler(build_ins: bool = False, as_list: bool = False, as_tree: bool = True
         func_trace = trace_tree.childrens[0]
         trace_tree = Tree('Base')
         head = trace_tree
-        if as_list:
+        if return_type == 'List':
             return func_trace.to_list()
-        if as_tree:
+        if return_type == 'Tree':
             return func_trace
+        if return_type == 'Print':
+            print(func_trace)
+        if return_type == 'Logger':
+            logger.info('test')
         return res
 
     return inner
+
+
+@crawler(c_calls=True)
+def test():
+    test_tree = Tree('Base')
+
+    def test_func():
+        test_tree = Tree('Base')
+        test_tree.childrens.append(Tree('A', test_tree))
+        test_tree.childrens.append(Tree('B', test_tree))
+        test_tree.childrens[0].childrens.append(
+            Tree('AA', test_tree.childrens[0]))
+        test_tree.childrens[0].childrens.append(
+            Tree('AB', test_tree.childrens[0]))
+        test_tree.childrens[1].childrens.append(
+            Tree('BA', test_tree.childrens[1]))
+        test_tree.childrens[1].childrens.append(
+            Tree('BB', test_tree.childrens[1]))
+        return test_tree
+    tree = test_func()
+    sum([1, 2, 3])
+    return 1
+
+
+if __name__ == '__main__':
+    test()

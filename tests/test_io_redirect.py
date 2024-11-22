@@ -58,7 +58,7 @@ def test_redirect_stdout_str(capsys):
     assert capsys.readouterr().out == "Hello, world!\n"
 
 def test_redirect_stdout_none(capsys):
-    @redirect()
+    @redirect(stdout_target=None)
     def print_hello():
         print("Hello, world!")
     
@@ -93,7 +93,7 @@ def test_redirect_stderr_str(capsys):
         os.remove(filename)
 
 def test_redirect_stderr_none(capsys):
-    @redirect()
+    @redirect(stderr_target=None)
     def print_hello():
         print("Hello, world!", file=sys.stderr)
     

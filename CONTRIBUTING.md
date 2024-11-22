@@ -14,14 +14,14 @@ Pull Request:
 - Fork repository
 - Create new branch
 - Add new decorators / propose new changes
-- After you write all code you planed to create a pull request
+- After you write all the code you planned, create a pull request
 - Create a Pull request (Please try to minimize commits done after creating pull request)
 - Wait for review and feel free to chat in comments
 - See your changes on repository and your name in README.md as a contributor
 
 Issue:
-- Propose of idea for decorator, request some update in repository or find some bug that needs to be fixed
+- Propose an idea for a decorator, request some update in repository or find some bug that needs to be fixed
 - Write about it, try to be as precise as possible
 - It may be helpful if you mention operating system and python version, for quicker verification
 - Be nice! We will help as quickly as we can :D
-- If you needs solution fast, you can write an pull request, or write an email (Dawid.siera@gmail.com)
+- If you needs solution fast, you can write a pull request, or write an email (Dawid.siera@gmail.com)

@@ -2,19 +2,21 @@ import os
 import sys
 import tempfile
 from uuid import uuid4
-from decorify import no_print, redirect_stdout, redirect_stderr
+from decorify import mute, redirect
 
 def test_no_print(capsys):
-    @no_print
+    @mute
     def print_hello():
         print("Hello, world!")
     
     print_hello()
     assert capsys.readouterr().out == ""
+    print("Hello, world!")
+    assert capsys.readouterr().out == "Hello, world!\n"
 
 def test_redirect_stdout_file(capsys):
     with tempfile.TemporaryFile("w+") as f:
-        @redirect_stdout(f)
+        @redirect(stdout_target=f)
         def print_hello():
             print("Hello, world!")
         
@@ -22,10 +24,12 @@ def test_redirect_stdout_file(capsys):
         f.seek(0)
         assert f.read() == "Hello, world!\n"
         assert capsys.readouterr().out == ""
+        print("Hello, world!")
+        assert capsys.readouterr().out == "Hello, world!\n"
 
 def test_redirect_stdout_str(capsys):
     filename = f"temp_{uuid4()}.txt"
-    @redirect_stdout(filename)
+    @redirect(stdout_target=filename)
     def print_hello():
         print("Hello, world!")
     
@@ -34,18 +38,22 @@ def test_redirect_stdout_str(capsys):
         assert f.read() == "Hello, world!\n"
     assert capsys.readouterr().out == ""
     os.remove(filename)
+    print("Hello, world!")
+    assert capsys.readouterr().out == "Hello, world!\n"
 
 def test_redirect_stdout_none(capsys):
-    @redirect_stdout()
+    @redirect()
     def print_hello():
         print("Hello, world!")
     
     print_hello()
     assert capsys.readouterr().out == ""
+    print("Hello, world!")
+    assert capsys.readouterr().out == "Hello, world!\n"
 
 def test_redirect_stderr_file(capsys):
     with tempfile.TemporaryFile("w+") as f:
-        @redirect_stderr(f)
+        @redirect(stderr_target=f)
         def print_hello():
             print("Hello, world!", file=sys.stderr)
         
@@ -56,7 +64,7 @@ def test_redirect_stderr_file(capsys):
 
 def test_redirect_stderr_str(capsys):
     filename = f"temp_{uuid4()}.txt"
-    @redirect_stderr(filename)
+    @redirect(stderr_target=filename)
     def print_hello():
         print("Hello, world!", file=sys.stderr)
     
@@ -69,7 +77,7 @@ def test_redirect_stderr_str(capsys):
         os.remove(filename)
 
 def test_redirect_stderr_none(capsys):
-    @redirect_stderr()
+    @redirect()
     def print_hello():
         print("Hello, world!", file=sys.stderr)
     

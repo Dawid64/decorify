@@ -6,7 +6,7 @@ from typing import Any, Callable, Union
 from .base import decorator
 
 @decorator
-def no_print(__func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
+def mute(__func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
     """ Decorator that disables ALL print statements in decorated function and its nested functions.
     
     Returns
@@ -36,56 +36,38 @@ def __redirect_dest(file: Union[IOBase, str, None]) -> IOBase:
 
 
 @decorator
-def redirect_stdout(file: Union[IOBase, str, None] = None,__func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
+def redirect(stdout_target: Union[IOBase, str, None] = None, stderr_target: Union[IOBase, str, None] = None,
+    __func__: Callable[[Any], Any] = None, ) -> Callable[[Any], Any]:
     """ Decorator that redirects everything written to stdout to a file or a file-like object.
 
     Parameters
     ----------
-    file : IOBase, str, None
+    stdout_target : IOBase, str, None
         File or file-like object to redirect stdout to. If a string is passed the stdout is redirected
         to a file with that name in append mode. If None, all text written to stdout is deleted instead.
-
+    stderr_target : IOBase, str, None
+        File or file-like object to redirect stderr to. If a string is passed the stdout is redirected
+        to a file with that name in append mode. If None, all text written to stdout is deleted instead.
+    
     Returns
     -------
     function
-        Wrapped function that has stdout redirected to the specified file.
+        Wrapped function that has stdout and stderr redirected to the specified file.
     """
     @wraps(__func__)
     def inner_func(*args, **kwargs):
-        dest = __redirect_dest(file)
+        dest_stdout = __redirect_dest(stdout_target)
+        dest_stderr = __redirect_dest(stderr_target)
         temp_stdout = sys.stdout
-        sys.stdout = dest
+        temp_stderr = sys.stderr
+        sys.stdout = dest_stdout
+        sys.stderr = dest_stderr
         result = __func__(*args, **kwargs)
         sys.stdout = temp_stdout
-        if dest != file:
-            dest.close()
-        return result
-    return inner_func
-
-
-@decorator
-def redirect_stderr(file: Union[IOBase, str, None] = None,__func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
-    """ Decorator that redirects everything written to stderr to a file or a file-like object.
-
-    Parameters
-    ----------
-    file : IOBase, str, None
-        File or file-like object to redirect stderr to. If a string is passed the stderr is redirected
-        to a file with that name in append mode. If None, all text written to stderr is deleted instead.
-
-    Returns
-    -------
-    function
-        Wrapped function that has stderr redirected to the specified file.
-    """
-    @wraps(__func__)
-    def inner_func(*args, **kwargs):
-        dest = __redirect_dest(file)
-        temp_stderr = sys.stderr
-        sys.stderr = dest
-        result = __func__(*args, **kwargs)
         sys.stderr = temp_stderr
-        if dest != file:
-            dest.close()
+        if dest_stdout != stdout_target:
+            dest_stdout.close()
+        if dest_stderr != stderr_target:
+            dest_stderr.close()
         return result
     return inner_func

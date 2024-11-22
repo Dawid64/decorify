@@ -4,6 +4,7 @@ import tempfile
 from uuid import uuid4
 from decorify import mute, redirect
 
+
 def test_no_print(capsys):
     @mute
     def print_hello():
@@ -13,6 +14,19 @@ def test_no_print(capsys):
     assert capsys.readouterr().out == ""
     print("Hello, world!")
     assert capsys.readouterr().out == "Hello, world!\n"
+
+
+def test_no_print_all(capsys):
+    @mute(mute_all=True)
+    def print_hello():
+        sys.stdout.write("Hello, world!\n")
+        print("Hello, world!")
+    
+    print_hello()
+    assert capsys.readouterr().out == ""
+    print("Hello, world!")
+    assert capsys.readouterr().out == "Hello, world!\n"
+
 
 def test_redirect_stdout_file(capsys):
     with tempfile.TemporaryFile("w+") as f:

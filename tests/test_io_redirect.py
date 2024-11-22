@@ -26,6 +26,8 @@ def test_no_print_all(capsys):
     assert capsys.readouterr().out == ""
     print("Hello, world!")
     assert capsys.readouterr().out == "Hello, world!\n"
+    sys.stdout.write("Hello, world!\n")
+    assert capsys.readouterr().out == "Hello, world!\n"
 
 
 def test_redirect_stdout_file(capsys):

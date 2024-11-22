@@ -5,7 +5,7 @@ def test_profiling_stack():
     def func_a():
         return sum([1, 1])
 
-    @crawler(as_list=True)
+    @crawler(return_type='List')
     def func_b():
         return func_a() + func_a()
 
@@ -16,7 +16,7 @@ def test_profiling_stack_build_ins():
     def func_a():
         return sum([1, 1])
 
-    @crawler(c_calls=True, as_list=True)
+    @crawler(c_calls=True, return_type='List')
     def func_b():
         return func_a() + func_a()
 
@@ -27,7 +27,7 @@ def test_profiling_tree():
     def func_a():
         return sum([1, 1])
 
-    @crawler(as_tree=True)
+    @crawler(return_type='Tree')
     def func_b():
         return func_a() + func_a()
 

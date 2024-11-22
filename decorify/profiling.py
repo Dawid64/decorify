@@ -134,29 +134,3 @@ def crawler(c_calls: bool = False, return_type: Literal['Tree', 'List', 'Logger'
         return res
 
     return inner
-
-
-@crawler(c_calls=True)
-def test():
-    test_tree = Tree('Base')
-
-    def test_func():
-        test_tree = Tree('Base')
-        test_tree.childrens.append(Tree('A', test_tree))
-        test_tree.childrens.append(Tree('B', test_tree))
-        test_tree.childrens[0].childrens.append(
-            Tree('AA', test_tree.childrens[0]))
-        test_tree.childrens[0].childrens.append(
-            Tree('AB', test_tree.childrens[0]))
-        test_tree.childrens[1].childrens.append(
-            Tree('BA', test_tree.childrens[1]))
-        test_tree.childrens[1].childrens.append(
-            Tree('BB', test_tree.childrens[1]))
-        return test_tree
-    tree = test_func()
-    sum([1, 2, 3])
-    return 1
-
-
-if __name__ == '__main__':
-    test()

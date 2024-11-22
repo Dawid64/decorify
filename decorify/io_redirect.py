@@ -36,7 +36,7 @@ def __redirect_dest(file: Union[IOBase, str, None]) -> IOBase:
 
 
 @decorator
-def redirect(stdout_target: Union[IOBase, str, None] = None, stderr_target: Union[IOBase, str, None] = None,
+def redirect(stdout_target: Union[IOBase, str, None] = sys.stdout, stderr_target: Union[IOBase, str, None] = sys.stderr,
     __func__: Callable[[Any], Any] = None, ) -> Callable[[Any], Any]:
     """ Decorator that redirects everything written to stdout to a file or a file-like object.
 
@@ -45,9 +45,13 @@ def redirect(stdout_target: Union[IOBase, str, None] = None, stderr_target: Unio
     stdout_target : IOBase, str, None
         File or file-like object to redirect stdout to. If a string is passed the stdout is redirected
         to a file with that name in append mode. If None, all text written to stdout is deleted instead.
+
+        By default no redirection is done.
     stderr_target : IOBase, str, None
         File or file-like object to redirect stderr to. If a string is passed the stdout is redirected
         to a file with that name in append mode. If None, all text written to stdout is deleted instead.
+        
+        By default no redirection is done.
     
     Returns
     -------

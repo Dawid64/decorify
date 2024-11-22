@@ -6,19 +6,29 @@ from typing import Any, Callable, Union
 from .base import decorator
 
 @decorator
-def mute(__func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
+def mute(mute_all: bool = False, __func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
     """ Decorator that disables ALL print statements in decorated function and its nested functions.
+    It also provides an option to disable all text written to stdout.
     
+    Parameters
+    ----------
+    mute_all : bool
+        If False, only print statements are disabled. If True, all text written to stdout is deleted. 
+        By default only print statements are disabled
+
     Returns
     -------
     function
-        Wrapped function that has ALL print statements disabled.
+        Wrapped function that has ALL print statements and optionally all other text written to stdout disabled.
     """
     @wraps(__func__)
     def inner_func(*args, **kwargs):
         temp_print = __builtins__["print"]
         __builtins__["print"] = lambda *args, **kwargs: None
-        result = __func__(*args, **kwargs)
+        if mute_all:
+            result = redirect(stdout_target=None)(__func__)(*args, **kwargs)
+        else:
+            result = __func__(*args, **kwargs)
         __builtins__["print"] = temp_print
         return result
     return inner_func
@@ -50,7 +60,7 @@ def redirect(stdout_target: Union[IOBase, str, None] = sys.stdout, stderr_target
     stderr_target : IOBase, str, None
         File or file-like object to redirect stderr to. If a string is passed the stdout is redirected
         to a file with that name in append mode. If None, all text written to stdout is deleted instead.
-        
+
         By default no redirection is done.
     
     Returns

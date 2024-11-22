@@ -5,7 +5,7 @@ from uuid import uuid4
 from decorify import mute, redirect
 
 
-def test_no_print(capsys):
+def test_mute_print(capsys):
     @mute
     def print_hello():
         print("Hello, world!")
@@ -16,7 +16,7 @@ def test_no_print(capsys):
     assert capsys.readouterr().out == "Hello, world!\n"
 
 
-def test_no_print_all(capsys):
+def test_mute_all(capsys):
     @mute(mute_all=True)
     def print_hello():
         sys.stdout.write("Hello, world!\n")

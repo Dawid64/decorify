@@ -2,7 +2,7 @@ import os
 import sys
 from io import IOBase
 from functools import wraps
-from typing import Any, Callable
+from typing import Any, Callable, Union
 from .base import decorator
 
 @decorator
@@ -24,7 +24,7 @@ def no_print(__func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
     return inner_func
 
 
-def __redirect_dest(file: IOBase|str|None) -> IOBase:
+def __redirect_dest(file: Union[IOBase, str, None]) -> IOBase:
     """ Returns a file-like object to redirect stdout to."""
     if file is None:
         return open(os.devnull, 'w')
@@ -36,7 +36,7 @@ def __redirect_dest(file: IOBase|str|None) -> IOBase:
 
 
 @decorator
-def redirect_stdout(file: IOBase|str|None = None,__func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
+def redirect_stdout(file: Union[IOBase, str, None] = None,__func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
     """ Decorator that redirects everything written to stdout to a file or a file-like object.
 
     Parameters
@@ -64,7 +64,7 @@ def redirect_stdout(file: IOBase|str|None = None,__func__: Callable[[Any], Any] 
 
 
 @decorator
-def redirect_stderr(file: IOBase|str|None = None,__func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
+def redirect_stderr(file: Union[IOBase, str, None] = None,__func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
     """ Decorator that redirects everything written to stderr to a file or a file-like object.
 
     Parameters

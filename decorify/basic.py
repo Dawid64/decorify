@@ -2,9 +2,11 @@
 Module containing general purpose decorators.
 """
 
+import datetime
 from functools import wraps
 from typing import Any, Callable, Dict
 from time import perf_counter, sleep
+from time import time as time_
 from itertools import product
 from .base import decorator
 from multiprocessing.pool import ThreadPool
@@ -166,3 +168,91 @@ def rate_limiter(time: float, max_calls: int, __func__=None) -> Callable[[Any], 
         __func__.__calls.append(perf_counter())
         return __func__(*args, **kwargs)
     return wrapped
+
+
+@decorator
+def time_limiter(time: float, max_calls: int, sync_with_clock: bool = False, __func__=None) -> Callable[[Any], Any]:
+    """
+    A decorator that enforces a time limit on function calls. The decorated function can only be called a
+    specified number of times within a given time interval. If the limit is reached, the function will wait
+    until the next allowed call time before proceeding. The decorator can also synchronize with the system
+    clock and reset the call counter each time interval counting from 00:00:00.
+    So for example, if the time interval is 10 minutes, if you execute the function at 6:38, the next call
+    will be allowed at 6:48 (or 6:40 if `sync_with_clock` is enabled).
+
+    **!!Note that this decorator is not thread-safe and should not be used carefully in a multi-threaded environment!!**
+
+    Parameters
+    ----------
+    time : float
+        The time window in seconds during which the number of function calls is limited.
+    max_calls : int
+        The maximum number of allowed calls to the function within the specified time window.
+    sync_with_clock : bool, default=False
+        If True, the decorator will synchronize with the system clock and reset the call counter each time interval counting from 00:00:00.
+
+    Returns
+    -------
+    Callable[[Any], Any]
+        The wrapped function with rate limiting applied.
+
+    Notes
+    -----
+    - The decorator uses a simple mechanism to track function call timestamps and enforce the rate limit.
+    - When the maximum number of calls is reached within the given time window, the function will wait for
+      enough time to allow another call to proceed.
+    - This decorator is particularly useful for controlling the rate of expensive operations or API requests.
+
+    Examples
+    --------
+    >>> from decorify import rate_limiter
+    >>> @rate_limiter(time=10, max_calls=2)
+    ... def example_function(x):
+    ...     print(f"Processing {x}")
+
+    >>> example_function(1)
+    Processing 1
+    >>> example_function(2)
+    Processing 2
+    >>> example_function(3)
+    Processing 3
+    """
+    __func__.__interval_counter = 0
+    if sync_with_clock:
+        now = datetime.datetime.now()
+        __func__.__interval_number = (now.hour * 360 + now.minute * 60 + now.second) // time
+    else:
+        start_time = time_()
+        __func__.__interval_number = (time_() - start_time) // time
+
+    @wraps(__func__)
+    def wrapped(*args, **kwargs):
+        current_interval = (time_() - start_time) // time
+        if current_interval <= __func__.__interval_number and __func__.__interval_counter >= max_calls:
+            sleep(time - ((time_() - start_time) % time))
+            current_interval = (time_() - start_time) // time
+
+        if current_interval > __func__.__interval_number:
+            __func__.__interval_counter = 0
+            __func__.__interval_number = current_interval
+
+        __func__.__interval_counter += 1
+        return __func__(*args, **kwargs)
+
+    @wraps(__func__)
+    def wrapped_sync(*args, **kwargs):
+        now = datetime.datetime.now()
+        time_in_secs = now.hour * 360 + now.minute * 60 + now.second
+        current_interval = time_in_secs // time
+        if current_interval == __func__.__interval_number and __func__.__interval_counter >= max_calls:
+            sleep(time - (time_in_secs % time))
+            now = datetime.datetime.now()
+            current_interval = (now.hour * 360 + now.minute * 60 + now.second) // time
+
+        if current_interval > __func__.__interval_number:
+            __func__.__interval_counter = 0
+            __func__.__interval_number = current_interval
+
+        __func__.__interval_counter += 1
+        return __func__(*args, **kwargs)
+    return wrapped_sync if sync_with_clock else wrapped

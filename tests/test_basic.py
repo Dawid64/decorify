@@ -1,5 +1,5 @@
 from pytest import raises
-from decorify.basic import timeit, grid_search, timeout, rate_limiter
+from decorify.basic import timeit, grid_search, timeout, rate_limiter, time_limiter
 from time import sleep, perf_counter
 
 
@@ -109,7 +109,7 @@ def test_timeout_error():
         foo()
 
 
-def test_limitter_non_activated():
+def test_rate_limiter_non_activated():
     @rate_limiter(0.05, 2)
     def foo(val):
         return val
@@ -119,7 +119,7 @@ def test_limitter_non_activated():
     assert val == 1
 
 
-def test_limitter_activated():
+def test_rate_limiter_activated():
     @rate_limiter(0.05, 1)
     def foo(val):
         return val
@@ -133,7 +133,7 @@ def test_limitter_activated():
     assert val2 == 2
 
 
-def test_limitter_many():
+def test_rate_limiter_many():
     @rate_limiter(0.05, 5)
     def foo():
         return
@@ -142,3 +142,40 @@ def test_limitter_many():
         foo()
     assert perf_counter() - start_time > 0.1
     assert perf_counter() - start_time < 0.2
+
+
+def test_time_limiter_non_activated():
+    @time_limiter(0.05, 2)
+    def foo(val):
+        return val
+    start_time = perf_counter()
+    val = foo(1)
+    assert perf_counter() - start_time < 0.05
+    assert val == 1
+
+
+def test_time_limiter_activated():
+    start_time = perf_counter()
+
+    @time_limiter(0.05, 1)
+    def foo(val):
+        return val
+    val1 = foo(1)
+    assert perf_counter() - start_time < 0.05
+    val2 = foo(2)
+    assert perf_counter() - start_time > 0.05
+    assert perf_counter() - start_time < 0.1
+    assert val1 == 1
+    assert val2 == 2
+
+
+def test_time_limiter_many():
+    @time_limiter(0.1, 5)
+    def foo():
+        return
+    start_time = perf_counter()
+    sleep(0.05)
+    for _ in range(10):
+        foo()
+    assert perf_counter() - start_time > 0.1
+    assert perf_counter() - start_time < 0.15

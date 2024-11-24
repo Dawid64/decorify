@@ -194,7 +194,7 @@ def time_limiter(time: float, max_calls: int, sync_with_clock: bool = False, __f
     Returns
     -------
     Callable[[Any], Any]
-        The wrapped function with rate limiting applied.
+        The wrapped function with time limiting applied.
 
     Notes
     -----
@@ -210,11 +210,11 @@ def time_limiter(time: float, max_calls: int, sync_with_clock: bool = False, __f
     ... def example_function(x):
     ...     print(f"Processing {x}")
 
-    >>> example_function(1)
+    >>> example_function(1)  # Immediate execution
     Processing 1
-    >>> example_function(2)
+    >>> example_function(2)  # Immediate execution
     Processing 2
-    >>> example_function(3)
+    >>> example_function(3)  # Waits until time limit allows
     Processing 3
     """
     __func__.__interval_counter = 0

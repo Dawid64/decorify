@@ -1,6 +1,6 @@
 from pytest import raises
-from decorify.basic import timeit, grid_search, timeout
-from time import sleep
+from decorify.basic import timeit, grid_search, timeout, limitter
+from time import sleep, perf_counter
 
 
 def test_timeit():
@@ -107,3 +107,38 @@ def test_timeout_error():
 
     with raises(ValueError):
         foo()
+
+
+def test_limitter_non_activated():
+    @limitter(0.05, 2)
+    def foo(val):
+        return val
+    start_time = perf_counter()
+    val = foo(1)
+    assert perf_counter() - start_time < 0.05
+    assert val == 1
+
+
+def test_limitter_activated():
+    @limitter(0.05, 1)
+    def foo(val):
+        return val
+    start_time = perf_counter()
+    val1 = foo(1)
+    assert perf_counter() - start_time < 0.05
+    val2 = foo(2)
+    assert perf_counter() - start_time > 0.05
+    assert perf_counter() - start_time < 0.1
+    assert val1 == 1
+    assert val2 == 2
+
+
+def test_limitter_many():
+    @limitter(0.05, 5)
+    def foo():
+        return
+    start_time = perf_counter()
+    for i in range(11):
+        foo()
+    assert perf_counter() - start_time > 0.1
+    assert perf_counter() - start_time < 0.2

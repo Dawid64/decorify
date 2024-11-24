@@ -2,6 +2,7 @@
 Module containing general purpose decorators.
 """
 
+from ast import List
 from functools import wraps
 import multiprocessing
 from typing import Any, Callable, Dict
@@ -10,6 +11,8 @@ from itertools import product
 from .base import decorator
 from multiprocessing.pool import ThreadPool
 from multiprocessing.context import TimeoutError as mp_TimeoutError
+from time import time as get_time
+from time import sleep
 
 
 @decorator
@@ -105,4 +108,28 @@ def timeout(time: float, default_value: Any = mp_TimeoutError, __func__=None) ->
                     return default_value
                 raise TimeoutError()
         return result
+    return wrapped
+
+
+@decorator
+def limitter(time: float, max_calls: int, __func__=None) -> Callable[[Any], Any]:
+    __func__.__calls = []
+
+    @wraps(__func__)
+    def wrapped(*args, **kwargs):
+        current_time = get_time()
+
+        def _calc(call):
+            return current_time - call < time
+
+        def _filter(calls):
+            return list(filter(_calc, calls))
+
+        __func__.__calls = _filter(__func__.__calls)
+
+        if len(__func__.__calls) >= max_calls:
+            sleep(__func__.__calls[0] + time - current_time)
+
+        __func__.__calls.append(current_time)
+        return __func__(*args, **kwargs)
     return wrapped

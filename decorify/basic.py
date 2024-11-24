@@ -108,7 +108,7 @@ def timeout(time: float, default_value: Any = mp_TimeoutError, __func__=None) ->
 
 
 @decorator
-def limitter(time: float, max_calls: int, __func__=None) -> Callable[[Any], Any]:
+def rate_limiter(time: float, max_calls: int, __func__=None) -> Callable[[Any], Any]:
     """
     A decorator that enforces a rate limit on function calls. The decorated function can only be called a
     specified number of times within a given time interval. If the limit is reached, the function will wait
@@ -137,8 +137,8 @@ def limitter(time: float, max_calls: int, __func__=None) -> Callable[[Any], Any]
 
     Examples
     --------
-    >>> from decorify import limitter
-    >>> @limitter(time=10, max_calls=2)
+    >>> from decorify import rate_limiter
+    >>> @rate_limiter(time=10, max_calls=2)
     ... def example_function(x):
     ...     print(f"Processing {x}")
 

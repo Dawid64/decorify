@@ -1,5 +1,5 @@
 from pytest import raises
-from decorify.basic import timeit, grid_search, timeout, limitter
+from decorify.basic import timeit, grid_search, timeout, rate_limiter
 from time import sleep, perf_counter
 
 
@@ -110,7 +110,7 @@ def test_timeout_error():
 
 
 def test_limitter_non_activated():
-    @limitter(0.05, 2)
+    @rate_limiter(0.05, 2)
     def foo(val):
         return val
     start_time = perf_counter()
@@ -120,7 +120,7 @@ def test_limitter_non_activated():
 
 
 def test_limitter_activated():
-    @limitter(0.05, 1)
+    @rate_limiter(0.05, 1)
     def foo(val):
         return val
     start_time = perf_counter()
@@ -134,7 +134,7 @@ def test_limitter_activated():
 
 
 def test_limitter_many():
-    @limitter(0.05, 5)
+    @rate_limiter(0.05, 5)
     def foo():
         return
     start_time = perf_counter()

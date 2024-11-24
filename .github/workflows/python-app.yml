@@ -15,6 +15,12 @@ jobs:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
         python-version: ["3.13", "3.11", "3.9", "3.7"]
+        exclude:
+          - os: macos-latest
+            python-version: "3.7"
+        include:
+          - os: macos-13
+            python-version: "3.7"
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4

@@ -182,7 +182,7 @@ def test_time_limiter_many():
 
 
 def test_time_sync():
-    time_limit = 0.5
+    time_limit = 0.2
 
     @timeit(1)
     @time_limiter(time_limit, 1, sync_with_clock=True)
@@ -195,9 +195,9 @@ def test_time_sync():
     (_, inner_time3), foo_time3 = foo()
     assert perf_counter() - start_time < time_limit * 3
     assert foo_time2 >= foo_time1
-    assert foo_time3 >= foo_time2
-    assert foo_time2 <= time_limit
+    assert time_limit >= foo_time2
     assert foo_time3 >= time_limit
+    assert foo_time3 >= foo_time1 + time_limit
     assert inner_time1 == foo_time1
-    assert inner_time2 < foo_time2
-    assert inner_time3 < foo_time3
+    assert inner_time2 <= foo_time2
+    assert inner_time3 == foo_time3 - time_limit

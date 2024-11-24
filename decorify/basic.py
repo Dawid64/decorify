@@ -217,13 +217,14 @@ def time_limiter(time: float, max_calls: int, sync_with_clock: bool = False, __f
     >>> example_function(3)  # Waits until time limit allows
     Processing 3
     """
-    __func__.__interval_counter = 0
     if sync_with_clock:
         now = datetime.datetime.now()
-        __func__.__interval_number = (now.hour * 360 + now.minute * 60 + now.second) // time
+        start_time = int(time_()) - (now.hour * 3600 + now.minute * 60 + now.second)
     else:
         start_time = time_()
-        __func__.__interval_number = (time_() - start_time) // time
+
+    __func__.__interval_counter = 0
+    __func__.__interval_number = (time_() - start_time) // time
 
     @wraps(__func__)
     def wrapped(*args, **kwargs):
@@ -239,20 +240,4 @@ def time_limiter(time: float, max_calls: int, sync_with_clock: bool = False, __f
         __func__.__interval_counter += 1
         return __func__(*args, **kwargs)
 
-    @wraps(__func__)
-    def wrapped_sync(*args, **kwargs):
-        now = datetime.datetime.now()
-        time_in_secs = now.hour * 360 + now.minute * 60 + now.second
-        current_interval = time_in_secs // time
-        if current_interval == __func__.__interval_number and __func__.__interval_counter >= max_calls:
-            sleep(time - (time_in_secs % time))
-            now = datetime.datetime.now()
-            current_interval = (now.hour * 360 + now.minute * 60 + now.second) // time
-
-        if current_interval > __func__.__interval_number:
-            __func__.__interval_counter = 0
-            __func__.__interval_number = current_interval
-
-        __func__.__interval_counter += 1
-        return __func__(*args, **kwargs)
-    return wrapped_sync if sync_with_clock else wrapped
+    return wrapped

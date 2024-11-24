@@ -2,17 +2,13 @@
 Module containing general purpose decorators.
 """
 
-from ast import List
 from functools import wraps
-import multiprocessing
 from typing import Any, Callable, Dict
-from time import perf_counter
+from time import perf_counter, sleep
 from itertools import product
 from .base import decorator
 from multiprocessing.pool import ThreadPool
 from multiprocessing.context import TimeoutError as mp_TimeoutError
-from time import time as get_time
-from time import sleep
 
 
 @decorator
@@ -117,19 +113,16 @@ def limitter(time: float, max_calls: int, __func__=None) -> Callable[[Any], Any]
 
     @wraps(__func__)
     def wrapped(*args, **kwargs):
-        current_time = get_time()
+        starting_time = perf_counter()
 
         def _calc(call):
-            return current_time - call < time
+            return starting_time - call < time
 
-        def _filter(calls):
-            return list(filter(_calc, calls))
-
-        __func__.__calls = _filter(__func__.__calls)
+        __func__.__calls = list(filter(_calc, __func__.__calls))
 
         if len(__func__.__calls) >= max_calls:
-            sleep(__func__.__calls[0] + time - current_time)
+            sleep(__func__.__calls[0] + time - starting_time)
 
-        __func__.__calls.append(current_time)
+        __func__.__calls.append(perf_counter())
         return __func__(*args, **kwargs)
     return wrapped

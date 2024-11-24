@@ -1,0 +1,1 @@
+{'a': int, 'b': int | str, 'c': 0, 'd': (float | None, 0.3)}

@@ -1,1 +1,1 @@
-{'a': int, 'b': int | str, 'c': 0, 'd': (float | None, 0.3)}
+{'a': int, 'b': {'type': int, 'value': 2}, 'c': 4, 'd': {'type': float | None, 'value': 0.3}}

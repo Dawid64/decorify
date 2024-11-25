@@ -2,19 +2,20 @@ import os
 import sys
 from io import IOBase
 from functools import wraps
-from typing import Any, Callable, Union
+from typing import Any, Callable, Union, Literal
 from .base import decorator
 
 @decorator
-def mute(mute_all: bool = False, __func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
-    """ Decorator that disables ALL print statements in decorated function and its nested functions.
-    It also provides an option to disable all text written to stdout.
+def mute(level: Literal["print", "stdout", "warning"] = "print", __func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
+    """ Decorator that disables some or all writes to stdout and/or stderr in decorated function and its nested functions.
     
     Parameters
     ----------
-    mute_all : bool
-        If False, only print statements are disabled. If True, all text written to stdout is deleted. 
-        By default only print statements are disabled
+    level : Literal["print", "stdout", "warning", "error"]
+        Specifies the type of text to mute. The following options are available:
+        - "print": Disables all print statements.
+        - "stdout": Disables all text written to stdout.
+        - "warning": Disables all text written to stdout and stderr except Exceptions.
 
     Returns
     -------
@@ -23,13 +24,21 @@ def mute(mute_all: bool = False, __func__: Callable[[Any], Any] = None) -> Calla
     """
     @wraps(__func__)
     def inner_func(*args, **kwargs):
-        temp_print = __builtins__["print"]
-        __builtins__["print"] = lambda *args, **kwargs: None
-        if mute_all:
-            result = redirect(stdout_target=None)(__func__)(*args, **kwargs)
-        else:
+        if level == "print":
+            temp_print = __builtins__["print"]
+            __builtins__["print"] = lambda *args, **kwargs: None
             result = __func__(*args, **kwargs)
-        __builtins__["print"] = temp_print
+            __builtins__["print"] = temp_print
+        elif level == "stdout":
+            result = redirect(stdout_target=None)(__func__)(*args, **kwargs)
+        elif level == "warning":
+            try:
+                result = redirect(stdout_target=None, stderr_target=None)(__func__)(*args, **kwargs)
+            except Exception as e:
+                result = None
+                raise e
+        else:
+            raise ValueError("Invalid level. Please pass 'print', 'stdout' or 'warning'.")
         return result
     return inner_func
 

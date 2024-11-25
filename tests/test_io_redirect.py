@@ -6,7 +6,7 @@ from decorify import mute, redirect
 
 
 def test_mute_print(capsys):
-    @mute
+    @mute(level="print")
     def print_hello():
         print("Hello, world!")
     
@@ -16,18 +16,28 @@ def test_mute_print(capsys):
     assert capsys.readouterr().out == "Hello, world!\n"
 
 
-def test_mute_all(capsys):
-    @mute(mute_all=True)
+def test_mute_stdout(capsys):
+    @mute(level="stdout")
     def print_hello():
-        sys.stdout.write("Hello, world!\n")
         print("Hello, world!")
+        sys.stdout.write("Hello, world!\n")
     
     print_hello()
     assert capsys.readouterr().out == ""
     print("Hello, world!")
     assert capsys.readouterr().out == "Hello, world!\n"
     sys.stdout.write("Hello, world!\n")
-    assert capsys.readouterr().out == "Hello, world!\n"
+
+
+def test_mute_warning_without_error(capsys):
+    @mute(level="warning")
+    def print_hello():
+        print("Hello, world!", file=sys.stderr)
+    
+    print_hello()
+    assert capsys.readouterr().err == ""
+    print("Hello, world!", file=sys.stderr)
+    assert capsys.readouterr().err == "Hello, world!\n"
 
 
 def test_redirect_stdout_file(capsys):

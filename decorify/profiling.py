@@ -55,9 +55,19 @@ class Tree:
     def __repr__(self):
         return generate_ascii_tree(self.to_list())
 
+    def remove_dunders(self):
+        if self.name.startswith('__'):
+            return
+        new_childrens = []
+        for child in self.childrens:
+            if child.remove_dunders():
+                new_childrens.append(child)
+        self.childrens = new_childrens
+        return True
+
 
 @decorator
-def crawler(c_calls: bool = False, return_type: Literal['Tree', 'List', 'Logger', 'Print'] = 'Print', logger: logging.Logger = None, __func__=None):
+def crawler(c_calls: bool = False, show_dunder_methods: bool = True, return_type: Literal['Tree', 'List', 'Logger', 'Print'] = 'Print', logger: logging.Logger = None, __func__=None):
     """
     ## Crawler
     Decorator for finding structure of the function.
@@ -75,6 +85,8 @@ def crawler(c_calls: bool = False, return_type: Literal['Tree', 'List', 'Logger'
     ----------
     c_calls : bool
         If enabled crawler also looks for C calls, by default False
+    show_dunder_methods : bool
+        If disabled crawler does not display dunder methods, by default True
     return_type : Literal['Tree', 'List', 'Logger', 'Print']
         Type of the output, by default 'Print':
         - 'Tree' - returns `decorify.profiling.Tree` structure
@@ -123,6 +135,8 @@ def crawler(c_calls: bool = False, return_type: Literal['Tree', 'List', 'Logger'
         func_trace = trace_tree.childrens[0]
         trace_tree = Tree('Base')
         head = trace_tree
+        if not show_dunder_methods:
+            func_trace.remove_dunders()
         if return_type == 'List':
             return func_trace.to_list()
         if return_type == 'Tree':

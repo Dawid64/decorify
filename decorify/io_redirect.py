@@ -34,7 +34,7 @@ def mute(level: Literal["print", "stdout", "warning"] = "print", __func__: Calla
             result = redirect(stdout_target=None)(__func__)(*args, **kwargs)
         elif level == "warning":
             try:
-                result = redirect(stdout_target=None, stderr_target=None)(__func__)(*args, **kwargs)
+                result = redirect(stdout_target=None, stderr_target=None, exclude_errors=True)(__func__)(*args, **kwargs)
             except Exception as e:
                 result = None
                 raise e
@@ -57,7 +57,7 @@ def __redirect_dest(file: Union[IOBase, str, None]) -> IOBase:
 
 @decorator
 def redirect(stdout_target: Union[IOBase, str, None] = sys.stdout, stderr_target: Union[IOBase, str, None] = sys.stderr,
-    __func__: Callable[[Any], Any] = None, ) -> Callable[[Any], Any]:
+    exclude_errors: bool = False, __func__: Callable[[Any], Any] = None, ) -> Callable[[Any], Any]:
     """ Decorator that redirects everything written to stdout to a file or a file-like object.
 
     Parameters
@@ -72,6 +72,10 @@ def redirect(stdout_target: Union[IOBase, str, None] = sys.stdout, stderr_target
         to a file with that name in append mode. If None, all text written to stdout is deleted instead.
 
         By default no redirection is done.
+    exclude_errors : bool
+        If True, exceptions raised in the decorated function will not be redirected alongside the rest of stderr.
+        By default all exceptions are written to the stderr_target.
+
     
     Returns
     -------
@@ -86,7 +90,11 @@ def redirect(stdout_target: Union[IOBase, str, None] = sys.stdout, stderr_target
         temp_stderr = sys.stderr
         sys.stdout = dest_stdout
         sys.stderr = dest_stderr
-        result = __func__(*args, **kwargs)
+        try:
+            result = __func__(*args, **kwargs)
+        finally:
+            if exclude_errors:
+                sys.stderr = temp_stderr
         sys.stdout = temp_stdout
         sys.stderr = temp_stderr
         if dest_stdout != stdout_target:

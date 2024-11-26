@@ -1,5 +1,6 @@
 import os
 import sys
+import builtins
 from io import IOBase
 from functools import wraps
 from typing import Any, Callable, Union, Literal
@@ -25,10 +26,10 @@ def mute(level: Literal["print", "stdout", "warning"] = "print", __func__: Calla
     @wraps(__func__)
     def inner_func(*args, **kwargs):
         if level == "print":
-            temp_print = __builtins__["print"]
-            __builtins__["print"] = lambda *args, **kwargs: None
+            temp_print = builtins.print
+            builtins.print = lambda *args, **kwargs: None
             result = __func__(*args, **kwargs)
-            __builtins__["print"] = temp_print
+            builtins.print = temp_print
         elif level == "stdout":
             result = redirect(stdout_target=None)(__func__)(*args, **kwargs)
         elif level == "warning":

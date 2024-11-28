@@ -3,6 +3,8 @@ from functools import wraps
 import logging
 import traceback
 import sys
+import cProfile
+import pstats
 from typing import List, Literal, Optional
 from decorify.base import decorator
 
@@ -148,3 +150,19 @@ def crawler(c_calls: bool = False, show_dunder_methods: bool = True, return_type
         return res
 
     return inner
+
+
+@decorator
+def profiler(save_path: Optional[str] = 'result.prof', __func__=None):
+    @wraps(__func__)
+    def wrapper(*args, **kwargs):
+        with cProfile.Profile() as prof:
+            result = __func__(*args, **kwargs)
+        stats = pstats.Stats(prof)
+        if save_path is None:
+            stats.sort_stats(pstats.SortKey.TIME)
+            stats.print_stats()
+        else:
+            stats.dump_stats(filename=save_path)
+        return result
+    return wrapper

@@ -8,7 +8,7 @@ Decorify  is a lightweight Python library without any dependencies that offers a
 from decorify.base import decorator
 from decorify.basic import timeit, grid_search, timeout
 from decorify.exceptions import default_value, validate_typehints
-from decorify.profiling import crawler
+from decorify.profiling import crawler, profiler
 
 __all__ = ['timeit', 'grid_search', 'timeout',
-           'default_value', 'validate_typehints', 'crawler']
+           'default_value', 'validate_typehints', 'crawler', 'profiler']

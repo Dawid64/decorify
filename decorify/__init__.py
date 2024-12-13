@@ -11,7 +11,7 @@ from decorify.exceptions import default_value, validate_typehints
 from decorify.io_redirect import mute, redirect
 from decorify.profiling import crawler
 
-__all__ = ['decorator', 'timeit', 'grid_search', 'timeout',
+__all__ = ['decorator', 'timeit', 'grid_search', 'timeout', 'mute', 'redirect',
            'rate_limiter', 'time_limiter', 'default_value', 'validate_typehints', 'crawler']
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'

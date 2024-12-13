@@ -4,7 +4,7 @@ import builtins
 from io import IOBase
 from functools import wraps
 from typing import Any, Callable, Union, Literal
-from .base import decorator
+from decorify.base import decorator
 
 @decorator
 def mute(level: Literal["print", "stdout", "warning"] = "stdout", __func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:

@@ -8,7 +8,7 @@ from typing import Any, Callable, Dict
 from time import perf_counter, sleep
 from time import time as time_
 from itertools import product
-from .base import decorator
+from decorify.base import decorator
 from multiprocessing.pool import ThreadPool
 from multiprocessing.context import TimeoutError as mp_TimeoutError
 

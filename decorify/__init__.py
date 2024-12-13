@@ -10,8 +10,9 @@ from decorify.basic import timeit, grid_search, timeout, rate_limiter, time_limi
 from decorify.exceptions import default_value, validate_typehints
 from decorify.io_redirect import mute, redirect
 from decorify.profiling import crawler
+from decorify.iterative import retry
 
-__all__ = ['decorator', 'timeit', 'grid_search', 'timeout', 'mute', 'redirect',
+__all__ = ['decorator', 'timeit', 'grid_search', 'timeout', 'mute', 'redirect', 'retry',
            'rate_limiter', 'time_limiter', 'default_value', 'validate_typehints', 'crawler']
 
 __version__ = '0.1.2'

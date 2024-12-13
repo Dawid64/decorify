@@ -21,6 +21,7 @@ pip install decorify
 | timeout | Terminates the function after it runs for too long |
 | mute | Disables stdout for duration of decorated function |
 | validate_typehints | Ensures that typehints are followed, raising error if not |
+| retry | If exception is raised function is retried up to predefined amount of times |
 | rate_limiter | Limits number of function calls such that there are no function calls within set amount of seconds |
 | time_limiter | Splits time into intervals, and limits the number of function calls within each interval |
 | default_value | Set default value for function if exception is raised |

@@ -7,12 +7,12 @@ from typing import Any, Callable, Union, Literal
 from .base import decorator
 
 @decorator
-def mute(level: Literal["print", "stdout", "warning"] = "print", __func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
+def mute(level: Literal["print", "stdout", "warning"] = "stdout", __func__: Callable[[Any], Any] = None) -> Callable[[Any], Any]:
     """ Decorator that disables some or all writes to stdout and/or stderr in decorated function and its nested functions.
     
     Parameters
     ----------
-    level : Literal["print", "stdout", "warning", "error"]
+    level : Literal["print", "stdout", "warning"]
         Specifies the type of text to mute. The following options are available:
         - "print": Disables all print statements.
         - "stdout": Disables all text written to stdout.

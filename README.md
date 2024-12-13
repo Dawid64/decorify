@@ -14,21 +14,21 @@ Install Decorators via pip:
 ```bash
 pip install decorify 
 ```
-## Features
+## Table of Content
+| Decorator | Main functionality |
+| --- | --- |
+| timeit | Measures the time of the function |
+| timeout | Terminates the function after it runs for too long |
+| mute | Disables stdout for duration of decorated function |
+| validate_typehints | Ensures that typehints are followed, raising error if not |
+| rate_limiter | Limits number of function calls such that there are no function calls within set amount of seconds |
+| time_limiter | Splits time into intervals, and limits the number of function calls within each interval |
+| default_value | Set default value for function if exception is raised |
+| grid_search | Allow user to perform grid search on each iteration of function call |
+| redirect | Enables user to redirect function input / output |
+| crawler | Looks for function calls structure and displays it as a tree or nested lists |
 
-### Basic
-- **timeit**: Measures the execution time of a function
-- **grid_search**: Preforms a grid search on passed arguments
-
-### Iterative
-- **retry**: Automatically retries a function if it raises an exception, with specified numer of maximal tries
-- **loop**: Runs the function n times and returns list of values
-- **average**: Automaticly calulates avrerage from n runs of a function
-
-### Exceptions
-- **default_value**: Assigns a default value to the function
-- **validate_typehints**: Checks if all the typehits passed to the function are of correct type
-
+## Additional Modules
 ### Plotting (matplotlib)
 - **plot_multiple**: Creates a plot of a function's return values
 - **plot_single**: Creates a plot of a function's return 

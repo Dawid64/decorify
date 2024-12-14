@@ -23,10 +23,10 @@ pip install decorify
 | validate_typehints | Ensures that typehints are followed, raising error if not |
 | retry | If exception is raised function is retried up to predefined amount of times |
 | rate_limiter | Limits number of function calls such that there are no function calls within set amount of seconds |
-| time_limiter | Splits time into intervals, and limits the number of function calls within each interval |
+| interval_rate_limiter | Splits time into intervals, and limits the number of function calls within each interval |
 | default_value | Set default value for function if exception is raised |
 | grid_search | Allow user to perform grid search on each iteration of function call |
-| redirect | Enables user to redirect function input / output |
+| redirect | Enables user to redirect function stdout / stderr |
 | crawler | Looks for function calls structure and displays it as a tree or nested lists |
 
 ## Additional Modules

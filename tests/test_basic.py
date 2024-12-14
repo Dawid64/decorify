@@ -1,5 +1,5 @@
 from pytest import raises
-from decorify.basic import timeit, grid_search, timeout, rate_limiter, time_limiter
+from decorify.basic import timeit, grid_search, timeout, rate_limiter, interval_rate_limiter
 from time import sleep, perf_counter
 
 
@@ -145,7 +145,7 @@ def test_rate_limiter_many():
 
 
 def test_time_limiter_non_activated():
-    @time_limiter(0.05, 2)
+    @interval_rate_limiter(0.05, 2)
     def foo(val):
         return val
     start_time = perf_counter()
@@ -157,7 +157,7 @@ def test_time_limiter_non_activated():
 def test_time_limiter_activated():
     start_time = perf_counter()
 
-    @time_limiter(0.05, 1)
+    @interval_rate_limiter(0.05, 1)
     def foo(val):
         return val
     val1 = foo(1)
@@ -170,7 +170,7 @@ def test_time_limiter_activated():
 
 
 def test_time_limiter_many():
-    @time_limiter(0.1, 5)
+    @interval_rate_limiter(0.1, 5)
     def foo():
         return
     start_time = perf_counter()
@@ -185,7 +185,7 @@ def test_time_sync():
     time_limit = 0.2
 
     @timeit(1)
-    @time_limiter(time_limit, 1, sync_with_clock=True)
+    @interval_rate_limiter(time_limit, 1, sync_with_clock=True)
     @timeit(1)
     def foo():
         return

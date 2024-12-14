@@ -171,7 +171,7 @@ def rate_limiter(time: float, max_calls: int, __func__=None) -> Callable[[Any], 
 
 
 @decorator
-def time_limiter(time: float, max_calls: int, sync_with_clock: bool = False, __func__=None) -> Callable[[Any], Any]:
+def interval_rate_limiter(time: float, max_calls: int, sync_with_clock: bool = False, __func__=None) -> Callable[[Any], Any]:
     """
     A decorator that enforces a time limit on function calls. The decorated function can only be called a
     specified number of times within a given time interval. If the limit is reached, the function will wait
@@ -194,7 +194,7 @@ def time_limiter(time: float, max_calls: int, sync_with_clock: bool = False, __f
     Returns
     -------
     Callable[[Any], Any]
-        The wrapped function with time limiting applied.
+        The wrapped function with rate limiting applied.
 
     Notes
     -----
@@ -205,8 +205,8 @@ def time_limiter(time: float, max_calls: int, sync_with_clock: bool = False, __f
 
     Examples
     --------
-    >>> from decorify import rate_limiter
-    >>> @rate_limiter(time=10, max_calls=2)
+    >>> from decorify import interval_rate_limiter
+    >>> @interval_rate_limiter(time=10, max_calls=2)
     ... def example_function(x):
     ...     print(f"Processing {x}")
 

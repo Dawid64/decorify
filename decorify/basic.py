@@ -116,7 +116,7 @@ def rate_limiter(time: float, max_calls: int, __func__=None) -> Callable[[Any], 
     specified number of times within a given time interval. If the limit is reached, the function will wait
     until the next allowed call time before proceeding.
 
-    **!!Note that this decorator is not thread-safe and should not be used carefully in a multi-threaded environment!!**
+    **!!Note that this decorator is not thread-safe and should be used carefully in a multi-threaded environment!!**
 
     Parameters
     ----------
@@ -173,14 +173,14 @@ def rate_limiter(time: float, max_calls: int, __func__=None) -> Callable[[Any], 
 @decorator
 def interval_rate_limiter(time: float, max_calls: int, sync_with_clock: bool = False, __func__=None) -> Callable[[Any], Any]:
     """
-    A decorator that enforces a time limit on function calls. The decorated function can only be called a
-    specified number of times within a given time interval. If the limit is reached, the function will wait
+    A decorator limits the number of how often the function can be called within specified interval.
+    If the limit is reached, the function will wait
     until the next allowed call time before proceeding. The decorator can also synchronize with the system
-    clock and reset the call counter each time interval counting from 00:00:00.
-    So for example, if the time interval is 10 minutes, if you execute the function at 6:38, the next call
+    clock in order to round values.
+    So for example, if the time interval is 10 minutes (600 seconds), if you execute the function at 6:38, the next call
     will be allowed at 6:48 (or 6:40 if `sync_with_clock` is enabled).
 
-    **!!Note that this decorator is not thread-safe and should not be used carefully in a multi-threaded environment!!**
+    **!!Note that this decorator is not thread-safe and should be used carefully in a multi-threaded environment!!**
 
     Parameters
     ----------

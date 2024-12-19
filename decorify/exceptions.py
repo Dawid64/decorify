@@ -1,6 +1,6 @@
 """ Python module for exception handling and validation """
 from typing import Any, Callable, Optional
-from .base import decorator
+from decorify.base import decorator
 from functools import wraps
 import logging
 import inspect

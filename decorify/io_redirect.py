@@ -1,5 +1,6 @@
 import os
 import sys
+import inspect
 import builtins
 from io import IOBase
 from functools import wraps
@@ -44,15 +45,47 @@ def mute(level: Literal["print", "stdout", "warning"] = "stdout", __func__: Call
     return inner_func
 
 
+def __has_write_and_read(obj):
+    """
+    Determine if an object has both `write(self, text)` and `read(self)` methods.
+
+    Parameters:
+    ----------
+    obj : Any
+        The object to be checked.
+
+    Returns:
+    -------
+    bool
+        True if the object has callable `write(text)` and `read()` methods, False otherwise.
+    """
+    has_write = callable(getattr(obj, 'write', None))
+    has_read = callable(getattr(obj, 'read', None))
+
+    if has_write and has_read:
+        write_signature = inspect.signature(obj.write)
+        read_signature = inspect.signature(obj.read)
+
+        write_params = list(write_signature.parameters.values())
+        read_params = list(read_signature.parameters.values())
+
+        positional_write_params = [param for param in write_params if param.default == inspect.Parameter.empty]
+        positional_read_params = [param for param in read_params if param.default == inspect.Parameter.empty]
+        if len(positional_write_params) == 1 and len(positional_read_params) == 0:
+            return True
+
+    return False
+
+
 def __redirect_dest(file: Union[IOBase, str, None]) -> IOBase:
     """ Returns a file-like object to redirect stdout to."""
     if file is None:
         return open(os.devnull, 'w')
     elif isinstance(file, str):
         return open(file, 'a')
-    elif isinstance(file, IOBase):
+    elif __has_write_and_read(file):
         return file
-    raise ValueError("Invalid file type. Please pass a file-like object, a string or None.")
+    raise ValueError("Invalid file type. Please pass a file-like object (contains read() and write(text) methods), a string or None.")
 
 
 @decorator

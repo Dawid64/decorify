@@ -1,8 +1,19 @@
 import os
 import sys
-import tempfile
 from uuid import uuid4
+from pytest import raises
 from decorify import mute, redirect
+
+
+class TempFile:
+    def __init__(self):
+        self.text = ""
+    
+    def write(self, text):
+        self.text += text
+        
+    def read(self):
+        return self.text
 
 
 def test_mute_print(capsys):
@@ -41,17 +52,16 @@ def test_mute_warning_without_error(capsys):
 
 
 def test_redirect_stdout_file(capsys):
-    with tempfile.TemporaryFile("w+") as f:
-        @redirect(stdout_target=f)
-        def print_hello():
-            print("Hello, world!")
-        
-        print_hello()
-        f.seek(0)
-        assert f.read() == "Hello, world!\n"
-        assert capsys.readouterr().out == ""
+    f = TempFile()
+    @redirect(stdout_target=f)
+    def print_hello():
         print("Hello, world!")
-        assert capsys.readouterr().out == "Hello, world!\n"
+    
+    print_hello()
+    assert f.read() == "Hello, world!\n"
+    assert capsys.readouterr().out == ""
+    print("Hello, world!")
+    assert capsys.readouterr().out == "Hello, world!\n"
 
 def test_redirect_stdout_str(capsys):
     filename = f"temp_{uuid4()}.txt"
@@ -78,15 +88,14 @@ def test_redirect_stdout_none(capsys):
     assert capsys.readouterr().out == "Hello, world!\n"
 
 def test_redirect_stderr_file(capsys):
-    with tempfile.TemporaryFile("w+") as f:
-        @redirect(stderr_target=f)
-        def print_hello():
-            print("Hello, world!", file=sys.stderr)
-        
-        print_hello()
-        f.seek(0)
-        assert f.read() == "Hello, world!\n"
-        assert capsys.readouterr().err == ""
+    f = TempFile()
+    @redirect(stderr_target=f)
+    def print_hello():
+        print("Hello, world!", file=sys.stderr)
+    
+    print_hello()
+    assert f.read() == "Hello, world!\n"
+    assert capsys.readouterr().err == ""
 
 def test_redirect_stderr_str(capsys):
     filename = f"temp_{uuid4()}.txt"
@@ -109,3 +118,21 @@ def test_redirect_stderr_none(capsys):
     
     print_hello()
     assert capsys.readouterr().err == ""
+    
+    
+def test_redirect_incorrect_stdout():
+    with raises(ValueError):
+        @redirect(stdout_target=1)
+        def print_hello():
+            print("Hello, world!")
+            
+        print_hello()
+            
+
+def test_redirect_incorrect_stderr():
+    with raises(ValueError):
+        @redirect(stderr_target=1)
+        def print_hello():
+            print("Hello, world!")
+        
+        print_hello()

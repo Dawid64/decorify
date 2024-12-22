@@ -1,6 +1,6 @@
-from time import time
+from time import time, sleep, perf_counter
 from pytest import raises
-from decorify.basic import timeit, grid_search, timeout
+from decorify.basic import timeit, grid_search, timeout, rate_limiter, time_limiter
 
 
 def blocking_sleep(sleep_time):
@@ -114,3 +114,97 @@ def test_timeout_error():
 
     with raises(ValueError):
         foo()
+
+
+def test_rate_limiter_non_activated():
+    @rate_limiter(0.05, 2)
+    def foo(val):
+        return val
+    start_time = perf_counter()
+    val = foo(1)
+    assert perf_counter() - start_time < 0.05
+    assert val == 1
+
+
+def test_rate_limiter_activated():
+    @rate_limiter(0.05, 1)
+    def foo(val):
+        return val
+    start_time = perf_counter()
+    val1 = foo(1)
+    assert perf_counter() - start_time < 0.05
+    val2 = foo(2)
+    assert perf_counter() - start_time > 0.05
+    assert perf_counter() - start_time < 0.1
+    assert val1 == 1
+    assert val2 == 2
+
+
+def test_rate_limiter_many():
+    @rate_limiter(0.05, 5)
+    def foo():
+        return
+    start_time = perf_counter()
+    for i in range(11):
+        foo()
+    assert perf_counter() - start_time > 0.1
+    assert perf_counter() - start_time < 0.2
+
+
+def test_time_limiter_non_activated():
+    @time_limiter(0.05, 2)
+    def foo(val):
+        return val
+    start_time = perf_counter()
+    val = foo(1)
+    assert perf_counter() - start_time < 0.05
+    assert val == 1
+
+
+def test_time_limiter_activated():
+    start_time = perf_counter()
+
+    @time_limiter(0.05, 1)
+    def foo(val):
+        return val
+    val1 = foo(1)
+    assert perf_counter() - start_time < 0.05
+    val2 = foo(2)
+    assert perf_counter() - start_time > 0.05
+    assert perf_counter() - start_time < 0.1
+    assert val1 == 1
+    assert val2 == 2
+
+
+def test_time_limiter_many():
+    @time_limiter(0.1, 5)
+    def foo():
+        return
+    start_time = perf_counter()
+    sleep(0.05)
+    for _ in range(10):
+        foo()
+    assert perf_counter() - start_time > 0.1
+    assert perf_counter() - start_time < 0.15
+
+
+def test_time_sync():
+    time_limit = 0.2
+
+    @timeit(1)
+    @time_limiter(time_limit, 1, sync_with_clock=True)
+    @timeit(1)
+    def foo():
+        return
+    start_time = perf_counter()
+    (_, inner_time1), foo_time1 = foo()
+    (_, inner_time2), foo_time2 = foo()
+    (_, inner_time3), foo_time3 = foo()
+    assert perf_counter() - start_time < time_limit * 3
+    assert foo_time2 >= foo_time1
+    assert time_limit >= foo_time2
+    assert foo_time3 >= time_limit
+    assert foo_time3 >= foo_time1 + time_limit
+    assert inner_time1 == foo_time1
+    assert inner_time2 <= foo_time2
+    assert inner_time3 == foo_time3 - time_limit

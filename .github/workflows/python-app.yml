@@ -16,9 +16,6 @@ jobs:
         os: [macos-latest, windows-latest, ubuntu-latest]
         python-version: ["3.13", "3.12", "3.11", "3.10", "3.9", "3.8"]
     runs-on: ${{ matrix.os }}
-    concurrency:
-      group: run-pytest
-      cancel-in-progress: false
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}

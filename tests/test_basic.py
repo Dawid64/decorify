@@ -1,13 +1,20 @@
+from time import time, sleep, perf_counter
 from pytest import raises
 from decorify.basic import timeit, grid_search, timeout, rate_limiter, time_limiter
-from time import sleep, perf_counter
+
+
+def blocking_sleep(sleep_time):
+    start = time()
+    while time() - start < sleep_time:
+        pass
+    return
 
 
 def test_timeit():
 
     @timeit
     def sleep_function(sleep_time):
-        sleep(sleep_time)
+        blocking_sleep(sleep_time)
         return 2
 
     sleep_time = 0.4
@@ -20,7 +27,7 @@ def test_timeit_accuracy():
 
     @timeit(1)
     def sleep_function(sleep_time):
-        sleep(sleep_time)
+        blocking_sleep(sleep_time)
         return 2
 
     sleep_time = 0.41
@@ -64,7 +71,7 @@ def test_grid_search_without_arguments():
 def test_timeout():
     @timeout(0.1)
     def foo(val):
-        sleep(val)
+        blocking_sleep(val)
         return val
 
     assert foo(0.05) == 0.05
@@ -73,7 +80,7 @@ def test_timeout():
 def test_timeout_raise():
     @timeout(0.05)
     def foo(val):
-        sleep(val)
+        blocking_sleep(val)
         return val
 
     with raises(TimeoutError):
@@ -83,7 +90,7 @@ def test_timeout_raise():
 def test_timeout_default():
     @timeout(0.1, None)
     def foo(val):
-        sleep(val)
+        blocking_sleep(val)
         return val
 
     assert foo(0.15) is None

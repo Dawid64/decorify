@@ -41,26 +41,29 @@ def test_ascii_generator():
     ascii_tree = generate_ascii_tree(sample)
     assert isinstance(ascii_tree, str)
 
-def test_track_leaks():
+def test_track_leaks_ok():
     @track_leaks
     def func_a():
         return sum([1, 1])
     
     _, leaked = func_a()
     assert leaked == 0
-    
-    # I have heard this is a memory leak, but I am not sure if it actually is
-    # this decorator sure thinks it is
+  
+def test_track_leaks_leak():
     # MAYBE create our own bad C mini extension with a memory leak and test it.
     @track_leaks
     def func_leak():
         try:
             raise Exception
-        except Exception as e:
-            etype, evalue, tb = sys.exc_info()
-            return tb
-        
-    _, leaked = func_leak()
+        except Exception:
+            # the traceback retains a reference to all the variables within 
+            # this context.
+            _, _, tb = sys.exc_info()
+            return tb # thus returning here means that memory escapes this ctx
+    # not a memory leak in the traditional sense, but a leak nonetheless
+    
+    _, leaked = func_leak() # Python probably here free'd the tb here
+    # but older versions did not
     assert leaked == 3
     
 def test_track_memory():

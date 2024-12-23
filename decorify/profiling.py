@@ -6,7 +6,7 @@ import sys
 from typing import List, Literal, Optional, Callable, Any
 from decorify.base import decorator
 import gc # python garbage collector
-import tracemalloc
+import tracemalloc # python memory profiler
 
 
 def generate_ascii_tree(item, prefix='', is_last=False, is_root=True):
@@ -153,14 +153,20 @@ def crawler(c_calls: bool = False, show_dunder_methods: bool = True, return_type
 
 def track_leaks(__func__: Callable[..., Any]) -> Callable[..., tuple[Any, int]]:
     """Decorator for finding memory leaks. 
-    It utilizes Python's gc module to track objects before and after function call.
-    The decorator returns a tuple of function's output and number of leaked objects.
+    It utilizes Python's gc module to track objects before and after function 
+    call. The decorator returns a tuple of function's output and number of 
+    leaked objects.
 
-    Args:
-        __func__ (Callable[..., Any], optional): The function to wrap. Defaults to None.
+    Parameters
+    ----------
+    __func__: Callable[..., Any] 
+        The function to wrap. Defaults to None.
 
-    Returns:
-        Callable[..., tuple[Any, int]]: Wrapped function that returns a tuple of function's output and number of leaked objects.
+    Returns
+    -------
+    Callable[..., tuple[Any, int]]
+        Wrapped function that returns a tuple of function's output and number of
+        leaked objects.
     """
     @wraps(__func__)
     def inner_func(*args, **kwargs) -> tuple[Any, int]:
@@ -179,14 +185,17 @@ def track_leaks(__func__: Callable[..., Any]) -> Callable[..., tuple[Any, int]]:
     return inner_func
 
 def measure_memory_usage(__func__: Callable[..., Any]) -> Callable[..., tuple[Any, int]]:
-    """Decorator for measuring memory usage. 
-    The decorator returns a tuple of function's output and peak memory usage in bytes.
+    """Decorator for measuring memory usage. The decorator returns a tuple of 
+    function's output and peak memory usage in bytes.
 
     Args:
-        __func__ (Callable[..., Any], optional): The function to wrap. Defaults to None.
+    __func__: Callable[..., Any]
+        The function to wrap. Defaults to None.
 
     Returns:
-        Callable[..., tuple[Any, int]]: Wrapped function that returns a tuple of function's output and memory usage in bytes.
+    Callable[..., tuple[Any, int]]
+        Wrapped function that returns a tuple of function's output and memory 
+        usage in bytes.
     """
     @wraps(__func__)
     def inner_func(*args, **kwargs) -> tuple[Any, int]:

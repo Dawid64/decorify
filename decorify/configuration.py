@@ -2,166 +2,136 @@
 import ast
 from functools import wraps
 import inspect
-import json
+
 import logging
 import types
 from typing import Any, Callable, Optional
-from base import decorator
+from .base import decorator
 from pathlib import Path
+import sys 
+
+import json
+
+
+#TODO instead of printing wrong format raise an exception??
+
 
 
 @decorator
 def configure(path: str|dict|None = None, *, logger: Optional[logging.Logger] = None, __func__: Callable = None) -> Callable:
     """
-    Decorator for configuring function values from a file
+    Decorator for configuring function values from a file or a dictionary.
 
-    Parameters
-    ----------
+    This decorator reads configuration data from the provided source and applies
+    it to the decorated function's arguments, ensuring that both positional and
+    keyword arguments are updated accordingly. The order of arguments is preserved.
+    
+    Files supported: .yaml, .yml, .txt, .toml, .json
+
+    ## Parameters
+    path: str|dict - path to the file with configuration or dict with configuration 
+    logger: logging.Logger - optional logger to log warnings
+
+    ## Returns
+    function - Wrapped function with configured values
+
+    ## Edge cases
+    ### File
+    - If the file is not found, not formatted properly or not supported the function will be returned without configuration.
+    - If yaml library is not insllled or python version is <3.11 and toml is not installed logs that's the library missing and returns the function without configuration.
+    ### Configuration
+    - If the postitional argument is not found in the config file and not set in the function, an exception will be raised.
+    - If the postiional argument has a different type in the config file than in the function, deafualt value will be taken if default value is set otherwise an exception will be raised.
+    - If the keyword argument has a different type in the config file than in the function, deafualt value will be taken 
     """
 
     @wraps(__func__)
     def wrapper(*args, **kwargs):
-        def _get_defult_args_dict():
-            output = dict()
-            #TODO info annotation __name__ is a string not a type 
-            for name,info in inspect.signature(__func__).parameters.items() :
-                if info.annotation is not inspect._empty and info.default is not inspect._empty:
-                    output[name] ={'type':info.annotation.__name__  if isinstance(info.annotation,type) else (info.annotation),'value':info.default} #(info.annotation.__name__  if isinstance(info.annotation,type) else info.annotation,info.default)
-                elif info.annotation is not inspect._empty:
-                    output[name] = info.annotation.__name__  if isinstance(info.annotation,type) else (info.annotation)     #info.annotation.__name__  if isinstance(info.annotation,type) else info.annotation
-                elif info.default is not inspect._empty:
-                    output[name] = info.default
-                else:
-                    output[name] = None
-            print(output)
-            return output
+        
         def _open_file():
-            if Path(path).suffix in ['.yaml','yml']:
-                try:
-                    import yaml
-                except:
-                    if isinstance(logger, logging.Logger):
-                        logger.warning("Yaml packackege is not installed")
-                        return __func__(*args, **kwargs)
+            if  not Path(path).is_file():
+                if isinstance(logger, logging.Logger):
+                    logger.warning("Configuration file not found, returning the function without configuration")
+                return {}
 
-                if not Path(path).is_file():
-                    output_file = Path(path)
-                    output_file.parent.mkdir(exist_ok=True, parents=True)
-                    with open(path, 'w') as f:
-                        yaml.safe_dump(_get_defult_args_dict(), f, default_flow_style=False)
-                with open(path, 'r') as f:
-                        return yaml.safe_load(f)
-
-            if Path(path).suffix == '.txt':
-                if not Path(path).is_file():
-                    output_file = Path(path)
-                    output_file.parent.mkdir(exist_ok=True, parents=True)
-                    with open(path, 'w') as f:
-                        f.write(str(_get_defult_args_dict()))
-                with open(path) as f:
-                    # TODO is it not a safety risk to use eval
-                    return eval(f.read())
-
-            if Path(path).suffix == '.json':
-                if not Path(path).is_file():
-                    print('nie ma jsona')
-                    output_file = Path(path)
-                    output_file.parent.mkdir(exist_ok=True, parents=True)
-                    with open(path, 'w') as f:
-                        json.dump(_get_defult_args_dict(), f, ensure_ascii=False, indent=4)
-                    print('zapisano jsona')
-                with open(path, 'r') as f:
-                    return json.load(f)
-
-                
-            if Path(path).suffix == '.toml`':
-                if  not Path(path).is_file():
-                    output_file = Path(path)
-                    output_file.parent.mkdir(exist_ok=True, parents=True)
-                    with open(path, 'w') as f:
-                        pass
-                with open(path, 'r') as f:
-                    pass
-
-             
-            if isinstance(logger, logging.Logger):
-                logger.warning("Unsuported config file")
-            return {}
-
-
-        # checking if path is instead already a dict
-        d = path if isinstance(path,dict) else _open_file()
-
-        if d == dict():
-            if isinstance(logger, logging.Logger):
-                logger.warning("Configuration file not formatted properly, can't decode the dict returning the funciton without configuration")
-            return __func__(*args, **kwargs)
-        
-        if not isinstance(d,dict):
-            if isinstance(logger, logging.Logger):
-                logger.warning("Configuration file not formatted properly, can't decode the dict returning the funciton without configuration")
-            return __func__(*args, **kwargs)
-        
-        # print(f"Base: args: {args}, kwargs: {kwargs}")
-
-        new_args = []
-        current_arg = 0
-        checked_args = []
-        for name,info in inspect.signature(__func__).parameters.items() :
-            # Checking args passed to function
-            if current_arg < len(args):
-                checked_args.append(name)
-                if name in d and isinstance(d[name],dict) and not isinstance(args[current_arg], d[name]['type']):
-                    new_args.append(d[name]['value'])
-                else:
-                    new_args.append(list(args)[current_arg])
-                current_arg += 1
-            elif name in d:
-                if isinstance(d[name],dict):
-                    if name not in kwargs or not isinstance(kwargs[name], d[name]['type']): 
-                        kwargs[name] = d[name]['value']
-                else:
-                    #TODO zaimplementowac to do argow tez  i np floaty porownywac z intami jako or == 
-                    if  isinstance(d[name],type):
-                        kwargs[name] = d[name]()
-                    elif isinstance(d[name],types.UnionType) :
-                        kwargs[name] = d[name].__args__[0]()
+            match Path(path).suffix:
+                case '.yaml', '.yml':
+                    try:
+                        import yaml
+                    except:
+                        if isinstance(logger, logging.Logger):
+                            logger.warning("Yaml packackege is not installed, you can instal it using 'pip install pyyaml', returning the function without configuration")
+                        return {}
+                    with open(path, 'r') as f:
+                            return yaml.safe_load(f)
+                case '.txt':
+                    with open(path, 'r') as f:
+                        return eval(f.read())
+                case '.toml':
+                    
+                    if sys.version_info >=  (3, 11):  # Python 3.11+
+                        import tomllib as toml
                     else:
-                        kwargs[name] = d[name]
+                        try:
+                            import toml
+                            with open(path, 'rb') as f:
+                                return toml.load(f)
+                        except:
+                            if isinstance(logger, logging.Logger):
+                                logger.warning("Toml packackege is not installed, you can instal it using 'pip install toml' or upgrade to python 3.11+ to have it in standard libraries, returning the function without configuration")
+                            return {}
+                    with open(path, 'rb') as f:
+                        return toml.load(f)
+                case '.json':
+                    with open(path, 'r') as f:
+                        return json.load(f)
+                case _: 
+                    if isinstance(logger, logging.Logger):
+                        logger.warning("Unsuported config file type, returning the function without configuration")
+                    return {}
 
-                        
+        config = path if isinstance(path,dict) else _open_file()
 
-
-        # print(args)
-        # print(kwargs)
-        return  __func__(*new_args, **kwargs)
-
-
+        if not isinstance(config,dict):
+            if isinstance(logger, logging.Logger):
+                logger.warning("Configuration file not formatted properly, can't decode the dict returning the funciton without configuration")
+            return __func__(*args, **kwargs)
         
-    
-    if path is None:
-        if isinstance(logger, logging.Logger):
-            logger.warning('No path specified in declaration of decorator')
-        return 
+        # Saving the order of args and kwargs 
+        for i, (name,info) in enumerate(inspect.signature(__func__).parameters.items()):
+            if i >= len(args):
+                #kwargs and unset args
+                if info.default == inspect._empty and name not in kwargs:
+                    #setting to args
+                    if name in config:
+
+                        if isinstance(config[name], (int,float) if info.annotation == float else info.annotation if  info.annotation != inspect._empty else object):
+                            args += (config[name],)
+                        else:
+                            raise ValueError(f"Argument '{name}' has diffrent type in config ({type(config[name])}) file than in function ({info.annotation})")
+                    else:
+                        raise Exception(f"Argument '{name}' not found in config file and not set in function")
+                else:
+                    #setting to kwargs
+                    if name not in kwargs : 
+                        if name in config:
+                            if isinstance(config[name], (int,float) if info.annotation == float else info.annotation if  info.annotation != inspect._empty else object):
+                                kwargs[name] = config[name]
+                            else:
+                                if info.default != inspect._empty:
+                                    if isinstance(logger, logging.Logger):
+                                        logger.warning(f"Argument '{name}' has diffrent type in config ({type(config[name])}) file than in function ({info.annotation}), using default value")
+                                    kwargs[name] = info.default
+                                else:
+                                    raise ValueError(f"Argument '{name}' has diffrent type in config ({type(config[name])}) file than in function ({info.annotation})")
+                    else:
+                        if not isinstance(kwargs[name], (int,float) if info.annotation == float else info.annotation if  info.annotation != inspect._empty else object):
+                            raise ValueError(f"Argument '{name}' has wrong value set in the function call")
+            else:
+                #args
+                if not isinstance(args[i], (int,float) if info.annotation == float else info.annotation if  info.annotation != inspect._empty else object):
+                    raise ValueError(f"Argument '{name}' has wrong value set in the function call") 
+                
+        return  __func__(*args, **kwargs)
     return wrapper
 
-
-
-
-logger = logging.getLogger('Logger testowy')
-dictconfig = configure('decorify/configs/config.txt',logger=logger)
-
-
-@dictconfig
-def test_func(a,b:int=2,c=4,d:float|None=0.3):
-    print(a,b,c,d)
-    return a + b + c + d
-
-
-@dictconfig
-def test_func(a,b,c,d):
-    print(a,b,c,d)
-    return a + b + c + d
-
-
-print(test_func(d=1))

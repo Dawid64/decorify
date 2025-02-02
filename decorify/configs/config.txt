@@ -1,1 +1,0 @@
-{'a': int, 'b': {'type': int, 'value': 2}, 'c': 4, 'd': {'type': float | None, 'value': 0.3}}

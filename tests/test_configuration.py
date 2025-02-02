@@ -1,11 +1,36 @@
 from decorify.configuration import configure
 import tempfile
 from pytest import raises
+import logging
 
 
+def test_yaml():
+    # TODO assumes the yaml is installed on the system
+    import yaml
+    data = {
+        'age': 10,
+        'name':"Piotrek"
+    }
+
+    with tempfile.NamedTemporaryFile(suffix=".yaml", delete=False, mode='w') as temp_file:
+        yaml.dump(data, temp_file)
+        temp_file_path = temp_file.name  
+    dictconfig = configure(temp_file_path)
+
+
+
+
+    @dictconfig
+    def who_am_i(age:int, name:str, letter:str='a'):
+        return f"I'm {name} and I have {age} years! {letter}"
+    
+
+    assert who_am_i(20, "Tomek") == "I'm Tomek and I have 20 years! a"
+    assert who_am_i() == "I'm Piotrek and I have 10 years! a"
+    assert who_am_i(20, letter='b') == "I'm Piotrek and I have 20 years! b"
 
 def test_toml():
-    # TODO toml is insalled on the system
+    # TODO toml is insalled on the system aka. python version is >= 3.11
     import toml
     data = {
         'age': 10,
@@ -13,8 +38,8 @@ def test_toml():
     }
 
     with tempfile.NamedTemporaryFile(suffix=".toml", delete=False, mode='w') as temp_file:
-        toml.dump(data, temp_file)  # Write TOML data to the file
-        temp_file_path = temp_file.name  # Store the path of the file
+        toml.dump(data, temp_file)  
+        temp_file_path = temp_file.name  
 
     dictconfig = configure(temp_file_path,logger=None)
 
@@ -36,8 +61,8 @@ def test_txt():
     }
 
     with tempfile.NamedTemporaryFile(suffix=".txt", delete=False, mode='w') as temp_file:
-        temp_file.write(str(data)) # Write TOML data to the file
-        temp_file_path = temp_file.name  # Store the path of the file
+        temp_file.write(str(data)) 
+        temp_file_path = temp_file.name  
 
     dictconfig = configure(temp_file_path,logger=None)
 
@@ -60,8 +85,8 @@ def test_json():
     }
 
     with tempfile.NamedTemporaryFile(suffix=".json", delete=False, mode='w') as temp_file:
-        json.dump(data, temp_file)  # Write TOML data to the file
-        temp_file_path = temp_file.name  # Store the path of the file
+        json.dump(data, temp_file)  
+        temp_file_path = temp_file.name 
 
     dictconfig = configure(temp_file_path,logger=None)
 

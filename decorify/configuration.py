@@ -55,15 +55,17 @@ def configure(path: str|dict|None = None, *, logger: Optional[logging.Logger] = 
                 return {}
 
             match Path(path).suffix:
-                case '.yaml', '.yml':
+                case '.yaml' | '.yml':
                     try:
                         import yaml
+
                     except:
                         if isinstance(logger, logging.Logger):
                             logger.warning("Yaml packackege is not installed, you can instal it using 'pip install pyyaml', returning the function without configuration")
                         return {}
                     with open(path, 'r') as f:
-                            return yaml.safe_load(f)
+                        return yaml.load(f, Loader=yaml.FullLoader)
+
                 case '.txt':
                     with open(path, 'r') as f:
                         return eval(f.read())
@@ -91,7 +93,6 @@ def configure(path: str|dict|None = None, *, logger: Optional[logging.Logger] = 
                     return {}
 
         config = path if isinstance(path,dict) else _open_file()
-
         if not isinstance(config,dict):
             if isinstance(logger, logging.Logger):
                 logger.warning("Configuration file not formatted properly, can't decode the dict returning the funciton without configuration")

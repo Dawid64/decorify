@@ -1,15 +1,12 @@
 """ Module with a way to configure function values"""
-import ast
+
 from functools import wraps
 import inspect
-
 import logging
-import types
-from typing import Any, Callable, Optional
+from typing import Optional
 from .base import decorator
 from pathlib import Path
 import sys 
-
 import json
 
 

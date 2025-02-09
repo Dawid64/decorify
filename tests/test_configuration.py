@@ -1,7 +1,7 @@
 from decorify.configuration import configure
 import tempfile
 from pytest import raises
-import logging
+
 
 
 def test_yaml():

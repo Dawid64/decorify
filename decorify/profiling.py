@@ -3,8 +3,10 @@ from functools import wraps
 import logging
 import traceback
 import sys
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Callable, Any
 from decorify.base import decorator
+import gc # python garbage collector
+import tracemalloc # python memory profiler
 
 
 def generate_ascii_tree(item, prefix='', is_last=False, is_root=True):
@@ -148,3 +150,62 @@ def crawler(c_calls: bool = False, show_dunder_methods: bool = True, return_type
         return res
 
     return inner
+
+def track_leaks(__func__: Callable[..., Any]) -> Callable[..., tuple[Any, int]]:
+    """Decorator for finding memory leaks. 
+    It utilizes Python's gc module to track objects before and after function 
+    call. The decorator returns a tuple of function's output and number of 
+    leaked objects.
+
+    Parameters
+    ----------
+    __func__: Callable[..., Any] 
+        The function to wrap. Defaults to None.
+
+    Returns
+    -------
+    Callable[..., tuple[Any, int]]
+        Wrapped function that returns a tuple of function's output and number of
+        leaked objects.
+    """
+    @wraps(__func__)
+    def inner_func(*args, **kwargs) -> tuple[Any, int]:
+        # enable garbage collector
+        gc_enabled = gc.isenabled()
+        if not gc_enabled:
+            gc.enable()
+        # track objects
+        tracked = len(gc.get_objects())
+        result = __func__(*args, **kwargs)
+        # find leaked objects
+        leaked = len(gc.get_objects()) - tracked
+        if not gc_enabled:
+            gc.disable()
+        return result, leaked
+    return inner_func
+
+def measure_memory_usage(__func__: Callable[..., Any]) -> Callable[..., tuple[Any, int]]:
+    """Decorator for measuring memory usage. The decorator returns a tuple of 
+    function's output and peak memory usage in bytes.
+
+    Args:
+    __func__: Callable[..., Any]
+        The function to wrap. Defaults to None.
+
+    Returns:
+    Callable[..., tuple[Any, int]]
+        Wrapped function that returns a tuple of function's output and memory 
+        usage in bytes.
+    """
+    @wraps(__func__)
+    def inner_func(*args, **kwargs) -> tuple[Any, int]:
+        tracing = tracemalloc.is_tracing()
+        if not tracing:
+            tracemalloc.start()
+        start_current, _ = tracemalloc.get_traced_memory()
+        result = __func__(*args, **kwargs)
+        _, peak = tracemalloc.get_traced_memory()
+        if not tracing:
+            tracemalloc.stop()
+        return result, peak - start_current
+    return inner_func

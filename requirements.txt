@@ -1,4 +1,11 @@
-pytest
 matplotlib
+# Testing
+pytest
+
+# Docs 
 sphinx
 sphinx_rtd_theme
+
+# configuration assistance languages
+pyYAML
+toml

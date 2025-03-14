@@ -1,4 +1,4 @@
-""" Base Module with decorator structurer """
+""" Base Module with decorator structure """
 from typing import Callable
 
 

@@ -8,6 +8,7 @@ Decorify  is a lightweight Python library without any dependencies that offers a
 from decorify.base import decorator
 from decorify.basic import timeit, grid_search, timeout, rate_limiter, interval_rate_limiter
 from decorify.exceptions import default_value, validate_typehints
+from decorify.configuration import *
 from decorify.io_redirect import mute, redirect
 from decorify.profiling import crawler
 from decorify.iterative import retry
